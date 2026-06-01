@@ -1,0 +1,221 @@
+@import "tailwindcss";
+
+@theme {
+  --color-orchestra-50: #eef2ff;
+  --color-orchestra-100: #e0e7ff;
+  --color-orchestra-200: #c7d2fe;
+  --color-orchestra-300: #a5b4fc;
+  --color-orchestra-400: #818cf8;
+  --color-orchestra-500: #6366f1;
+  --color-orchestra-600: #4f46e5;
+  --color-orchestra-700: #4338ca;
+  --color-orchestra-800: #3730a3;
+  --color-orchestra-900: #312e81;
+  --color-orchestra-950: #1e1b4b;
+
+  --color-surface-0: #0a0a0f;
+  --color-surface-1: #12121a;
+  --color-surface-2: #1a1a26;
+  --color-surface-3: #222233;
+  --color-surface-4: #2a2a3d;
+
+  --color-accent-cyan: #06b6d4;
+  --color-accent-emerald: #10b981;
+  --color-accent-amber: #f59e0b;
+  --color-accent-rose: #f43f5e;
+  --color-accent-violet: #8b5cf6;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+}
+
+/* ──────── Base ──────── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-surface-0);
+  color: #e2e8f0;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ──────── Scrollbar ──────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-4);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-orchestra-500);
+}
+
+/* ──────── Glass Panels ──────── */
+.glass {
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.08) 0%,
+    rgba(139, 92, 246, 0.04) 100%
+  );
+  backdrop-filter: blur(20px) saturate(1.2);
+  border: 1px solid rgba(99, 102, 241, 0.12);
+}
+
+.glass-strong {
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.14) 0%,
+    rgba(139, 92, 246, 0.08) 100%
+  );
+  backdrop-filter: blur(40px) saturate(1.4);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+/* ──────── Glow Effects ──────── */
+.glow-indigo {
+  box-shadow: 0 0 30px -5px rgba(99, 102, 241, 0.3),
+    0 0 60px -10px rgba(139, 92, 246, 0.15);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 30px -5px rgba(6, 182, 212, 0.3),
+    0 0 60px -10px rgba(6, 182, 212, 0.15);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.3),
+    0 0 60px -10px rgba(16, 185, 129, 0.15);
+}
+
+/* ──────── Pulse Ring ──────── */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+.pulse-ring::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  animation: pulse-ring 2s ease-out infinite;
+}
+
+/* ──────── Gradient Text ──────── */
+.gradient-text {
+  background: linear-gradient(135deg, #818cf8, #a78bfa, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ──────── Grid Background ──────── */
+.grid-bg {
+  background-image: radial-gradient(
+      circle at 1px 1px,
+      rgba(99, 102, 241, 0.06) 1px,
+      transparent 0
+    );
+  background-size: 32px 32px;
+}
+
+/* ──────── Agent Status Indicators ──────── */
+.agent-status-idle {
+  background: var(--color-surface-3);
+  border-color: var(--color-surface-4);
+}
+.agent-status-active {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+.agent-status-thinking {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+.agent-status-error {
+  background: rgba(244, 63, 94, 0.12);
+  border-color: rgba(244, 63, 94, 0.4);
+}
+
+/* ──────── React Flow Overrides ──────── */
+.react-flow__background {
+  background: transparent !important;
+}
+.react-flow__minimap {
+  background: var(--color-surface-1) !important;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(99, 102, 241, 0.12) !important;
+}
+.react-flow__controls {
+  border-radius: var(--radius-lg) !important;
+  overflow: hidden;
+  border: 1px solid rgba(99, 102, 241, 0.12) !important;
+}
+.react-flow__controls-button {
+  background: var(--color-surface-2) !important;
+  border-color: rgba(99, 102, 241, 0.12) !important;
+  fill: #a5b4fc !important;
+}
+.react-flow__controls-button:hover {
+  background: var(--color-surface-3) !important;
+}
+
+/* ──────── Animations ──────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.float-animation {
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(99, 102, 241, 0.08) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes orbit {
+  from { transform: rotate(0deg) translateX(80px) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(80px) rotate(-360deg); }
+}

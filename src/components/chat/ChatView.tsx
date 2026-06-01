@@ -1,0 +1,409 @@
+/* ──────────────────────────────────────────────────────────
+   Chat Interface Component
+   ────────────────────────────────────────────────────────── */
+
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useOrchestraStore } from "@/store/orchestra";
+import { AGENT_COLORS, cn, timeAgo } from "@/lib/utils";
+import {
+  Send,
+  Camera,
+  Paperclip,
+  Mic,
+  Sparkles,
+  Loader2,
+  Trash2,
+  Image,
+} from "lucide-react";
+import type { ChatMessage } from "@/types";
+
+export function ChatView() {
+  const {
+    messages,
+    isProcessing,
+    sendMessage,
+    clearMessages,
+  } = useOrchestraStore();
+  const [input, setInput] = useState("");
+  const [showWebcam, setShowWebcam] = useState(false);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const handleSend = async () => {
+    const trimmed = input.trim();
+    if (!trimmed && !capturedImage) return;
+    setInput("");
+    const img = capturedImage;
+    setCapturedImage(null);
+    await sendMessage(trimmed || "Analyze this image", img ? "image" : "text", img || undefined);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Chat Header */}
+      <div className="flex items-center justify-between px-6 py-3 border-b border-white/5">
+        <div className="flex items-center gap-3">
+          <Sparkles size={18} className="text-orchestra-400" />
+          <h2 className="text-sm font-semibold text-white/80">
+            Agent Conversation
+          </h2>
+          <span className="text-xs text-white/25 font-mono">
+            {messages.length} messages
+          </span>
+        </div>
+        <button
+          id="clear-chat"
+          onClick={clearMessages}
+          className="p-2 rounded-lg hover:bg-white/5 text-white/25 hover:text-accent-rose/70 transition-colors"
+        >
+          <Trash2 size={14} />
+        </button>
+      </div>
+
+      {/* Messages */}
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto px-6 py-4 space-y-4 scroll-smooth"
+      >
+        {messages.length === 0 && (
+          <EmptyState onDemo={() => {
+            setInput("Analyze my desk via webcam and create a productivity plan");
+          }} />
+        )}
+
+        <AnimatePresence initial={false}>
+          {messages.map((msg) => (
+            <MessageBubble key={msg.id} message={msg} />
+          ))}
+        </AnimatePresence>
+
+        {isProcessing && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-2 text-sm text-white/30"
+          >
+            <Loader2 size={14} className="animate-spin text-orchestra-400" />
+            <span>Agents are working…</span>
+          </motion.div>
+        )}
+      </div>
+
+      {/* Captured Image Preview */}
+      {capturedImage && (
+        <div className="px-6 pb-2">
+          <div className="relative inline-block">
+            <img
+              src={`data:image/jpeg;base64,${capturedImage}`}
+              alt="Captured"
+              className="h-20 rounded-lg border border-white/10"
+            />
+            <button
+              onClick={() => setCapturedImage(null)}
+              className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-accent-rose flex items-center justify-center text-white text-xs"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Webcam Modal */}
+      {showWebcam && (
+        <WebcamCapture
+          onCapture={(img) => {
+            setCapturedImage(img);
+            setShowWebcam(false);
+          }}
+          onClose={() => setShowWebcam(false)}
+        />
+      )}
+
+      {/* Input Bar */}
+      <div className="p-4 border-t border-white/5">
+        <div className="flex items-end gap-2 glass rounded-2xl px-4 py-3">
+          {/* Toolbar */}
+          <div className="flex items-center gap-1 pb-0.5">
+            <button
+              id="webcam-btn"
+              onClick={() => setShowWebcam(true)}
+              className="p-2 rounded-lg hover:bg-white/5 text-white/30 hover:text-accent-cyan transition-colors"
+              title="Capture webcam"
+            >
+              <Camera size={18} />
+            </button>
+            <button
+              className="p-2 rounded-lg hover:bg-white/5 text-white/30 hover:text-orchestra-400 transition-colors"
+              title="Attach file"
+            >
+              <Paperclip size={18} />
+            </button>
+            <button
+              className="p-2 rounded-lg hover:bg-white/5 text-white/30 hover:text-accent-amber transition-colors"
+              title="Voice input"
+            >
+              <Mic size={18} />
+            </button>
+          </div>
+
+          {/* Text Input */}
+          <textarea
+            ref={inputRef}
+            id="chat-input"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Ask Orchestra anything… (try: 'Analyze my desk and plan my day')"
+            rows={1}
+            className="flex-1 bg-transparent text-sm text-white/80 placeholder:text-white/20 resize-none outline-none py-2 max-h-32"
+            style={{ minHeight: "2rem" }}
+          />
+
+          {/* Send */}
+          <motion.button
+            id="send-btn"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleSend}
+            disabled={isProcessing || (!input.trim() && !capturedImage)}
+            className={cn(
+              "p-2.5 rounded-xl transition-all duration-200",
+              input.trim() || capturedImage
+                ? "bg-orchestra-500 text-white shadow-lg shadow-orchestra-500/25 hover:bg-orchestra-400"
+                : "bg-white/5 text-white/20 cursor-not-allowed"
+            )}
+          >
+            {isProcessing ? (
+              <Loader2 size={18} className="animate-spin" />
+            ) : (
+              <Send size={18} />
+            )}
+          </motion.button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Message Bubble ──
+function MessageBubble({ message }: { message: ChatMessage }) {
+  const isUser = message.role === "user";
+  const isAgent = message.role === "agent";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.2 }}
+      className={cn("flex gap-3", isUser && "flex-row-reverse")}
+    >
+      {/* Avatar */}
+      <div
+        className={cn(
+          "w-8 h-8 rounded-xl flex items-center justify-center text-sm shrink-0",
+          isUser
+            ? "bg-orchestra-500/20 text-orchestra-300"
+            : isAgent
+            ? ""
+            : "bg-surface-3 text-white/40"
+        )}
+        style={
+          isAgent && message.agentId
+            ? {
+                backgroundColor: `${AGENT_COLORS[message.agentId]}15`,
+                color: AGENT_COLORS[message.agentId],
+              }
+            : undefined
+        }
+      >
+        {isUser ? "You" : isAgent && message.agentId ? (
+          { router: "🎯", vision: "👁️", planner: "📋", memory: "🧠", research: "🔬", action: "⚡", creative: "🎨" }[message.agentId]
+        ) : "⚙️"}
+      </div>
+
+      {/* Content */}
+      <div
+        className={cn(
+          "max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
+          isUser
+            ? "bg-orchestra-500/15 text-white/90 rounded-tr-md"
+            : "bg-surface-2 text-white/75 rounded-tl-md border border-white/5"
+        )}
+      >
+        <div className="whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{
+          __html: formatMessage(message.content)
+        }} />
+        <div className="text-[10px] text-white/20 mt-2 font-mono">
+          {timeAgo(message.timestamp)}
+          {isAgent && message.agentId && (
+            <span
+              className="ml-2"
+              style={{ color: AGENT_COLORS[message.agentId] }}
+            >
+              via {message.agentId}
+            </span>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Simple markdown-like formatting ──
+function formatMessage(content: string): string {
+  return content
+    .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white/95">$1</strong>')
+    .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded bg-surface-3 text-orchestra-300 text-xs font-mono">$1</code>')
+    .replace(/^### (.*$)/gm, '<h3 class="text-sm font-bold text-white/85 mt-3 mb-1">$1</h3>')
+    .replace(/^## (.*$)/gm, '<h2 class="text-base font-bold text-white/90 mt-3 mb-1">$1</h2>')
+    .replace(/^- (.*$)/gm, '<div class="flex gap-2 ml-2"><span class="text-orchestra-400">•</span><span>$1</span></div>')
+    .replace(/^\d+\. (.*$)/gm, '<div class="ml-2">$&</div>')
+    .replace(/\n/g, "<br/>");
+}
+
+// ── Empty State ──
+function EmptyState({ onDemo }: { onDemo: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex flex-col items-center justify-center h-full text-center py-20"
+    >
+      <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-orchestra-400/20 to-orchestra-600/10 flex items-center justify-center mb-6 float-animation">
+        <Sparkles size={32} className="text-orchestra-400" />
+      </div>
+      <h2 className="text-xl font-bold gradient-text mb-2">
+        Welcome to Orchestra AI
+      </h2>
+      <p className="text-sm text-white/30 max-w-md mb-6">
+        Your personal AI orchestra is ready. Multiple specialized agents
+        collaborate to understand, plan, and act — all running locally on your
+        device.
+      </p>
+      <div className="flex flex-wrap gap-2 justify-center">
+        {[
+          "Analyze my desk via webcam",
+          "Create a productivity plan",
+          "What can you do?",
+        ].map((prompt) => (
+          <motion.button
+            key={prompt}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onDemo()}
+            className="px-4 py-2 rounded-xl text-xs font-medium glass hover:bg-white/5 text-white/40 hover:text-white/70 transition-all"
+          >
+            {prompt}
+          </motion.button>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Webcam Capture Component ──
+function WebcamCapture({
+  onCapture,
+  onClose,
+}: {
+  onCapture: (base64: string) => void;
+  onClose: () => void;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+
+  useEffect(() => {
+    navigator.mediaDevices
+      .getUserMedia({ video: { width: 640, height: 480 } })
+      .then((s) => {
+        setStream(s);
+        if (videoRef.current) {
+          videoRef.current.srcObject = s;
+        }
+      })
+      .catch(console.error);
+
+    return () => {
+      stream?.getTracks().forEach((t) => t.stop());
+    };
+  }, []);
+
+  const capture = () => {
+    if (!videoRef.current) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.drawImage(videoRef.current, 0, 0);
+    const base64 = canvas.toDataURL("image/jpeg", 0.8).split(",")[1];
+    stream?.getTracks().forEach((t) => t.stop());
+    onCapture(base64);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="glass-strong rounded-2xl p-6 max-w-lg w-full mx-4"
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold text-white/80 flex items-center gap-2">
+            <Camera size={16} className="text-accent-cyan" />
+            Webcam Capture
+          </h3>
+          <button
+            onClick={onClose}
+            className="p-1 rounded-lg hover:bg-white/10 text-white/40"
+          >
+            ✕
+          </button>
+        </div>
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          className="w-full rounded-xl border border-white/10 bg-black"
+        />
+        <div className="flex gap-2 mt-4">
+          <button
+            onClick={capture}
+            className="flex-1 py-2.5 rounded-xl bg-accent-cyan/20 text-accent-cyan text-sm font-semibold hover:bg-accent-cyan/30 transition-colors flex items-center justify-center gap-2"
+          >
+            <Image size={16} />
+            Capture & Analyze
+          </button>
+          <button
+            onClick={onClose}
+            className="px-4 py-2.5 rounded-xl bg-white/5 text-white/40 text-sm hover:bg-white/10 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}

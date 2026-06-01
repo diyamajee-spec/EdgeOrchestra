@@ -1,0 +1,57 @@
+# Orchestra AI — Docker Compose
+# Development services including Ollama for local AI inference
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: orchestra-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Model puller — downloads recommended models on first start
+  model-setup:
+    image: ollama/ollama:latest
+    container_name: orchestra-model-setup
+    depends_on:
+      ollama:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "🎵 Orchestra AI — Pulling recommended models..."
+        ollama pull phi4-mini
+        echo "✅ phi4-mini ready"
+        ollama pull moondream
+        echo "✅ moondream ready"
+        echo "🎶 All models ready! Orchestra is tuned up."
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+
+  # ChromaDB for vector storage (optional)
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: orchestra-chromadb
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
+  chroma_data:
