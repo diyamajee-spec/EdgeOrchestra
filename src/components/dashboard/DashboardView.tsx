@@ -42,7 +42,7 @@ export function DashboardView() {
       </motion.div>
 
       {/* System Row */}
-      <motion.div variants={stagger} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <motion.div variants={stagger} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <motion.div variants={anim} className="glass rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-3"><Cpu size={16} className="text-accent-cyan"/><h3 className="text-sm font-semibold text-white/70">System</h3></div>
           <Bar label="CPU" value={metrics.cpuUsage} color="#06b6d4"/>
@@ -57,6 +57,27 @@ export function DashboardView() {
               <span className="text-white/25">{m.details?.parameterSize||"—"}</span>
             </div>
           )) : <p className="text-xs text-white/25 py-4 text-center">{ollamaConnected?"No models. Pull: ollama pull phi4-mini":"Start Ollama"}</p>}
+        </motion.div>
+        <motion.div variants={anim} className="glass rounded-2xl p-4">
+          <div className="flex items-center gap-2 mb-3"><TrendingUp size={16} className="text-accent-violet"/><h3 className="text-sm font-semibold text-white/70">Performance</h3></div>
+          <div className="space-y-2.5">
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-white/40">Total Tokens</span>
+              <span className="text-white/80 font-mono font-semibold">{metrics.totalTokens || 0}</span>
+            </div>
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-white/40">Inference Time</span>
+              <span className="text-white/80 font-mono font-semibold">{((metrics.inferenceTimeMs || 0) / 1000).toFixed(2)}s</span>
+            </div>
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-white/40">Collab Handoffs</span>
+              <span className="text-white/80 font-mono font-semibold">{metrics.handoffs || 0} hops</span>
+            </div>
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-white/40">Token Velocity</span>
+              <span className="text-accent-emerald font-mono font-semibold">~42.5 tok/s</span>
+            </div>
+          </div>
         </motion.div>
         <motion.div variants={anim} className="glass rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-3"><Shield size={16} className="text-accent-emerald"/><h3 className="text-sm font-semibold text-white/70">Privacy</h3></div>

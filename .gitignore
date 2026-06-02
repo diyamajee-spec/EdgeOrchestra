@@ -5,3 +5,5 @@ target/
 *.log
 .env
 .env.local
+*.tsbuildinfo
+vite.config.d.ts

@@ -1,8 +1,23 @@
 {
   "name": "orchestra-ai",
   "private": true,
-  "version": "0.1.0",
-  "description": "Edge AI Personal Agent Orchestra — local-first, privacy-preserving multimodal AI agent platform",
+  "version": "1.0.0",
+  "description": "Your Personal AI Orchestra — 100% Local, Private & Multimodal Multi-Agent Orchestration Engine",
+  "keywords": [
+    "local-first",
+    "privacy-preserving",
+    "multimodal-ai",
+    "multi-agent",
+    "tauri-2",
+    "crdt",
+    "loro",
+    "wasm",
+    "ollama",
+    "react-19",
+    "edge-ai"
+  ],
+  "author": "EdgeOrchestra Contributors",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -42,6 +57,7 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.8",
     "@tauri-apps/cli": "^2.5.0",
+    "@types/node": "^25.9.1",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
     "@vitejs/plugin-react": "^4.5.2",

@@ -16,12 +16,15 @@ import {
   Wifi,
   WifiOff,
   Cpu,
+  Sparkles,
 } from "lucide-react";
 
 const NAV_ITEMS = [
   { id: "dashboard" as const, icon: LayoutDashboard, label: "Dashboard" },
   { id: "chat" as const, icon: MessageSquare, label: "Chat" },
   { id: "agents" as const, icon: Bot, label: "Agents" },
+  { id: "plugins" as const, icon: Cpu, label: "Plugins" },
+  { id: "showcase" as const, icon: Sparkles, label: "Showcase" },
   { id: "memory" as const, icon: Brain, label: "Memory" },
   { id: "settings" as const, icon: Settings, label: "Settings" },
 ];
@@ -47,7 +50,7 @@ export function Sidebar() {
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 h-16 border-b border-white/5">
         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orchestra-400 to-orchestra-600 flex items-center justify-center text-white font-bold text-lg shrink-0 shadow-lg shadow-orchestra-500/20">
-          O
+          E
         </div>
         <AnimatePresence>
           {sidebarOpen && (
@@ -58,7 +61,7 @@ export function Sidebar() {
               transition={{ duration: 0.15 }}
             >
               <h1 className="text-sm font-bold gradient-text whitespace-nowrap">
-                Orchestra AI
+                EdgeOrchestra AI
               </h1>
               <p className="text-[10px] text-white/30 font-mono">
                 Edge Agent Platform

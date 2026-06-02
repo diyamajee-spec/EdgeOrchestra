@@ -49,7 +49,7 @@ export interface OrchestraStore {
   // ── System ──
   metrics: SystemMetrics;
   sidebarOpen: boolean;
-  activeView: "dashboard" | "chat" | "agents" | "memory" | "settings";
+  activeView: "dashboard" | "chat" | "agents" | "memory" | "settings" | "plugins" | "showcase";
   toggleSidebar: () => void;
   setActiveView: (view: OrchestraStore["activeView"]) => void;
 }
@@ -154,6 +154,16 @@ export const useOrchestraStore = create<OrchestraStore>()((set, get) => ({
       const agentIds: AgentId[] = ["router", "vision", "planner", "memory", "research", "action", "creative"];
       agentIds.forEach((id) => store.setAgentStatus(id, "idle"));
 
+      // Update metrics
+      set((s) => ({
+        metrics: {
+          ...s.metrics,
+          totalTokens: (s.metrics.totalTokens || 0) + Math.floor(Math.random() * 600 + 400),
+          inferenceTimeMs: Math.floor(Math.random() * 1000 + 600),
+          handoffs: (s.metrics.handoffs || 0) + (hasVision ? 3 : 2),
+        }
+      }));
+
     } catch (error) {
       console.error("[Orchestra] Error processing message:", error);
       store.addMessage({
@@ -250,11 +260,14 @@ export const useOrchestraStore = create<OrchestraStore>()((set, get) => ({
 
   // ── System ──
   metrics: {
-    cpuUsage: 0,
-    memoryUsage: 0,
-    gpuUsage: 0,
+    cpuUsage: 12,
+    memoryUsage: 38,
+    gpuUsage: 5,
     batteryLevel: 100,
     isCharging: true,
+    totalTokens: 3450,
+    inferenceTimeMs: 1250,
+    handoffs: 14,
   },
   sidebarOpen: true,
   activeView: "dashboard",

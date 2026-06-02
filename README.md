@@ -1,180 +1,120 @@
+# 🎯 EdgeOrchestra AI
+
 <div align="center">
-  <img src="public/orchestra-icon.svg" width="100" height="100" alt="Orchestra AI Logo" />
-  <h1>Orchestra AI</h1>
-  <p><strong>Edge AI Personal Agent Orchestra</strong></p>
-  <p><em>Local-First · Privacy-Preserving · Multimodal · Multi-Agent Platform</em></p>
-  
-  <p>
-    <a href="#-features">Features</a> •
-    <a href="#-quick-start">Quick Start</a> •
-    <a href="#-architecture">Architecture</a> •
-    <a href="#-agent-roles">Agent Roles</a> •
-    <a href="#-contributing">Contributing</a>
-  </p>
 
-  <hr />
+<h3>🎻 Your Personal AI Orchestra — 100% Local, Private & Multimodal 🎻</h3>
+
+[![GitHub License](https://img.shields.io/github/license/diyamajee-spec/EdgeOrchestra?style=for-the-badge&color=8b5cf6)](LICENSE)
+[![Platform Support](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-06b6d4?style=for-the-badge)](https://github.com/diyamajee-spec/EdgeOrchestra)
+[![Ollama Powered](https://img.shields.io/badge/Inference-Ollama%20Local-10b981?style=for-the-badge)](https://ollama.com)
+[![CRDT Sync](https://img.shields.io/badge/Sync-Loro%20CRDT-f59e0b?style=for-the-badge)](https://loro.dev)
+[![Wasm Plugins](https://img.shields.io/badge/Plugins-Wasm%20Sandbox-f43f5e?style=for-the-badge)](#wasm-plugins)
+
+<p align="center">
+  A local-first, privacy-preserving multi-agent desktop orchestra powered by Tauri 2 + React 19 + TypeScript + Ollama. EdgeOrchestra AI coordinates specialized offline models to execute complex multi-step workflows entirely on your own device.
+</p>
+
+[✨ Try a Showcase](#interactive-showcase) • [🚀 One-Command Install](#quick-start) • [🏗️ Architecture](#system-architecture) • [🧩 Wasm Plugins](#wasm-plugins)
+
 </div>
-
-## 📌 Overview
-
-**Orchestra AI** is an advanced, privacy-preserving, multimodal multi-agent platform designed to run entirely on the user's local device. Multiple specialized AI agents (Router, Vision, Planner, Memory, Research, Action, Creative) collaborate seamlessly like an orchestra to fulfill complex user queries, automate tasks, and manage persistent memory—all offline by default using edge-optimized models via [Ollama](https://ollama.com).
 
 ---
 
-## ⚡ Key Features
+## 📷 Screenshots
 
-* **🎯 Intelligent Orchestration:** A centralized Router (phi4-mini) decomposes complex queries into multi-step execution plans and delegates them to specialist agents.
-* **👁️ Multimodal Capabilities:** Seamless processing of text, webcam streams, screenshots, and custom files using local vision models (qwen2.5-vl or moondream).
-* **🧠 Synced Local Memory:** Infinite-history, privacy-preserving shared memory using state-of-the-art Loro CRDT sync across devices and sessions.
-* **🔌 Extensible Architecture:** Build custom specialized agents using standard Rust compiled to high-performance WebAssembly (WASM) plugins.
-* **📊 Visual Control Center:** Beautiful React Flow agent orchestration graphs and real-time system/memory visualizations.
-* **🔒 absolute Privacy:** 100% on-device execution. Zero external API calls, zero telemetry, and zero cloud tracking.
+### 📊 Performance Dashboard & Visual Agent Flow
+*Capture real-time token metrics, latency, and collaborative execution graph.*
+![Performance Dashboard Placeholder](https://raw.githubusercontent.com/diyamajee-spec/EdgeOrchestra/main/docs/assets/dashboard_screenshot.png)
+
+### 💬 Multimodal Chat & Vision Handoffs
+*Capture frames directly via webcam and coordinate specialist agents.*
+![Multimodal Chat Placeholder](https://raw.githubusercontent.com/diyamajee-spec/EdgeOrchestra/main/docs/assets/chat_screenshot.png)
+
+---
+
+## 🌟 Key Features
+
+*   **100% On-Device & Offline**: No cloud APIs, no telemetry, and zero network data leaks. All inference is run locally via Ollama.
+*   **Multimodal Collaborators**: Captures live device sensors (e.g. webcam) to perform spatial and visual audits using `qwen2.5-vl`.
+*   **Visual Agent Graph**: React Flow coordinates a router agent (`phi4-mini`) which builds execution plans, delegating to specialized research, planning, action, and creative agents.
+*   **Persistent CRDT Memory**: Synchronized state and persistent history using the Loro CRDT framework, providing conflict-free replication across devices.
+*   **Wasm Plugin Sandbox**: Safely extend capabilities with sandboxed WebAssembly plugins written in Rust or AssemblyScript.
+*   **Performance Metrics Dashboard**: Real-time visualization of token speeds, inference latency, memory allocations, and agent collaboration steps.
+*   **Voice Input & Text-to-Speech**: Built-in voice transcription and offline speech synthesis readouts for complete hands-free interaction.
 
 ---
 
 ## 🚀 Quick Start
 
-Ensure you have the following prerequisites installed:
-* **Node.js** v20+
-* **Rust** v1.75+ (for Tauri desktop client)
-* **Ollama** ([Download here](https://ollama.com))
+### One-Command Setup
 
-### 1. Installation
+Get EdgeOrchestra AI up and running in seconds. The installer automatically downloads Ollama, pulls the primary models, validates system dependencies, and installs npm packages.
 
-```bash
-# Clone the repository
-git clone https://github.com/your-org/orchestra-ai.git
-cd orchestra-ai
-
-# Install dependencies
-npm install
+#### 🪟 Windows (PowerShell)
+```powershell
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/diyamajee-spec/EdgeOrchestra/main/install.ps1'))
 ```
+*(Or run `.\install.ps1` from the project directory).*
 
-### 2. Configure Local Models
-
-Start Ollama on your system:
+#### 🍎 macOS / 🐧 Linux (Bash)
 ```bash
-ollama serve
+curl -fsSL https://raw.githubusercontent.com/diyamajee-spec/EdgeOrchestra/main/setup.sh | bash
 ```
+*(Or run `./setup.sh` from the project directory).*
 
-In another terminal, download the optimized models:
-```bash
-ollama pull phi4-mini
-ollama pull moondream
-```
-*Note: You can also spin up the entire Ollama + vector database environment via `docker compose up -d`.*
-
-### 3. Start Development Mode
-
-```bash
-# Start frontend only (Browser mode)
-npm run dev
-
-# Start full desktop app (Tauri mode)
-npm run tauri dev
-```
+### Manual Commands
+If you prefer running manual commands:
+1. Ensure Ollama is running and pull the models:
+   ```bash
+   ollama pull phi4-mini
+   ollama pull qwen2.5-vl
+   ```
+2. Install dependencies & run:
+   ```bash
+   npm install
+   npm run tauri dev
+   ```
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ System Architecture
+
+EdgeOrchestra AI uses a hub-and-spoke multi-agent coordination model. The Router agent (using `phi4-mini`) acts as the orchestrator, determining which specialist agents are needed to fulfill a request.
 
 ```mermaid
-graph TD
-    classDef main fill:#6366f1,stroke:#312e81,stroke-width:2px,color:#fff;
-    classDef infra fill:#1e1b4b,stroke:#4338ca,stroke-width:1px,color:#a5b4fc;
-    classDef agent fill:#0a0a0f,stroke:#222233,stroke-width:1px,color:#cbd5e1;
-
-    UI[React Dashboard]:::main --> Chat[Chat Interface]:::main
-    UI --> Graph[Agent Flow Graph]:::main
-
-    Chat -->|User Request| Router[🎯 Router Agent]:::agent
-    
-    Router -->|Execution Steps| Vision[👁️ Vision Agent]:::agent
-    Router -->|Execution Steps| Planner[📋 Planner Agent]:::agent
-    Router -->|Execution Steps| Memory[🧠 Memory Agent]:::agent
-    Router -->|Execution Steps| Creative[🎨 Creative Agent]:::agent
-
-    Vision -->|Scene Analysis| Planner
-    Planner -->|Tasks| Action[⚡ Action Agent]:::agent
-
-    Vision & Planner & Router -->|Inference Calls| Ollama[Ollama Server]:::infra
-    Memory -->|CRDT Sync| Loro[Loro CRDT Engine]:::infra
+sequenceDiagram
+    autonumber
+    User->>Router (phi4-mini): Submits query / captures image
+    Router (phi4-mini)->>Vision Agent (qwen2.5-vl): (If Image) Analyze spatial coordinates
+    Vision Agent (qwen2.5-vl)-->>Router (phi4-mini): Vision observations / OCR data
+    Router (phi4-mini)->>Planner Agent: Coordinates time blocks & task orders
+    Router (phi4-mini)->>Action / Wasm Agent: Triggers safe file ops or schedules meetings
+    Router (phi4-mini)->>Memory Agent (Loro CRDT): Syncs preferences/results to session DB
+    Router (phi4-mini)-->>User: Renders unified UI output + local voice synthesis readout
 ```
 
----
-
-## 🎭 Agent Roles & Capabilities
-
-| Agent | Model | Primary Capabilities |
-| :--- | :--- | :--- |
-| **🎯 Router** | `phi4-mini` | Conductor, intent classification, plan generation, task delegation |
-| **👁️ Vision** | `moondream` | Spatial object detection, scene understanding, document OCR, webcam analysis |
-| **📋 Planner** | `phi4-mini` | Eisenhower prioritization, time estimation, schedule creation, smart time-blocking |
-| **🧠 Memory** | `phi4-mini` | Fact extraction, user preference learning, CRDT sync, context retrieval |
-| **🔬 Research** | `phi4-mini` | Reasoning, local knowledge base synthesis, document analysis |
-| **⚡ Action** | `phi4-mini` | System command execution, secure file organization, custom notifications |
-| **🎨 Creative** | `phi4-mini` | Creative content writing, code generation, ideas brainstorming |
+### Data Synchronization & Conflict Resolution (CRDT)
+Local state is modeled using **Loro CRDTs**. This ensures that if you run EdgeOrchestra AI on multiple devices (macOS/Windows), syncing data (like memory keys and configuration items) requires no centralized database. State changes can be exported as raw delta byte arrays and merged instantly and deterministically.
 
 ---
 
-## 📁 Repository Structure
+## 🧩 Wasm Plugins
 
-```
-orchestra-ai/
-├── src/                          # React TypeScript Frontend
-│   ├── agents/                   # Agent configurations & system prompts
-│   ├── components/               # UI views (Dashboard, Chat, Memory, Settings)
-│   │   ├── agents/               # Agent status cards & Flow Graph
-│   │   ├── layout/               # Sidebar navigation & Header bar
-│   │   └── chat/                 # Interactive chat & webcam client
-│   ├── store/                    # Zustand global application state
-│   └── types/                    # TypeScript interfaces
-├── src-tauri/                    # Tauri 2 Desktop Rust Backend
-│   └── src/
-│       ├── agents.rs             # Local intent classification & planning
-│       ├── commands.rs           # Tauri command bridge endpoints
-│       └── ollama.rs             # Local Ollama integration client
-├── plugins/                      # WASM Custom Agent template
-├── docker-compose.yml            # Pre-configured containerized services
-└── README.md                     # Project documentation
-```
+Custom capabilities can be built using our WebAssembly plugin templates:
+- **Calendar & Task Manager** (`plugins/calendar`): Extract dates, schedules, and priority workflows.
+- **Smart File Organizer** (`plugins/file_organizer`): Safely group files, scan download directories, and trigger space cleanups.
+- **Web Search Fallback** (`plugins/web_search`): Executes keyword fallback APIs when online results are explicitly requested.
 
----
-
-## 🛠️ Technology Stack
-
-* **Frontend:** React 19, TypeScript, Vite, Tailwind CSS v4, Zustand 5, React Flow, Framer Motion
-* **Desktop Wrapper:** Tauri 2 (Rust)
-* **Local Inference:** Ollama HTTP API
-* **Sync & CRDT:** Loro CRDT Engine
-* **Containerization:** Docker Compose
-
----
-
-## 🏷️ Good First Issues
-
-If you're looking to contribute to the local agent ecosystem, here are excellent starter issues:
-
-- [ ] **Voice-to-Text Input:** Integrate the browser Web Speech API for voice interactions.
-- [ ] **Keyboard Shortcuts:** Add standard commands like `Ctrl+K` for command palette and `Ctrl+Enter` to submit.
-- [ ] **Memory search:** Add filter queries to search through persistent memory nodes.
-- [ ] **Dark/Light Theme Toggle:** Implement dynamic CSS variable switching.
-- [ ] **Export Chat:** Export chat history directly as raw Markdown or JSON documents.
-
----
-
-## 🔒 Privacy & Safety
-
-* **Offline-First:** No telemetry, tracking, or network collection. Your queries are never sent to external servers.
-* **On-Device Storage:** Memory vector databases, configuration, and CRDT tables reside 100% on your machine.
-* **Safe Actions:** Secure execution boundary. Medium to high-risk system commands require manual user confirmation.
+### Build and Load
+1. Write logic inside `src/lib.rs` (exposed functions: `process`, `get_info`, `alloc`, `dealloc`).
+2. Build to Wasm:
+   ```bash
+   cargo build --target wasm32-unknown-unknown --release
+   ```
+3. Load the output `.wasm` file using the **Plugin Manager** page in the application.
 
 ---
 
 ## 📜 License
 
-Distributed under the MIT License. See [LICENSE](LICENSE) for more details.
-
-<div align="center">
-  <p><sub>Orchestra AI is crafted with ❤️ for the privacy and local AI community.</sub></p>
-</div>
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

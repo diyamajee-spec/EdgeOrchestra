@@ -15,6 +15,8 @@ import {
   Loader2,
   Trash2,
   Image,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import type { ChatMessage } from "@/types";
 
@@ -30,6 +32,83 @@ export function ChatView() {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // ── Speech Recognition (STT) ──
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+  const toggleListening = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Speech recognition is not supported in this browser/webview.");
+      return;
+    }
+
+    const rec = new SpeechRecognition();
+    rec.continuous = false;
+    rec.interimResults = false;
+    rec.lang = "en-US";
+
+    rec.onstart = () => {
+      setIsListening(true);
+    };
+
+    rec.onresult = (event: any) => {
+      const text = event.results[0][0].transcript;
+      setInput((prev) => prev + (prev ? " " : "") + text);
+    };
+
+    rec.onerror = (event: any) => {
+      console.error("[SpeechRecognition] Error:", event.error);
+      setIsListening(false);
+    };
+
+    rec.onend = () => {
+      setIsListening(false);
+    };
+
+    recognitionRef.current = rec;
+    rec.start();
+  };
+
+  // ── Speech Synthesis (TTS) ──
+  const [speakingId, setSpeakingId] = useState<string | null>(null);
+
+  const speak = (id: string, text: string) => {
+    if (speakingId === id) {
+      window.speechSynthesis.cancel();
+      setSpeakingId(null);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const cleanText = text
+      .replace(/\*\*/g, "")
+      .replace(/`/g, "")
+      .replace(/###/g, "")
+      .replace(/##/g, "")
+      .replace(/- /g, "")
+      .replace(/\n/g, " ");
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.onend = () => setSpeakingId(null);
+    utterance.onerror = () => setSpeakingId(null);
+    
+    setSpeakingId(id);
+    window.speechSynthesis.speak(utterance);
+  };
+
+  useEffect(() => {
+    return () => {
+      window.speechSynthesis.cancel();
+    };
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -88,7 +167,12 @@ export function ChatView() {
 
         <AnimatePresence initial={false}>
           {messages.map((msg) => (
-            <MessageBubble key={msg.id} message={msg} />
+            <MessageBubble
+              key={msg.id}
+              message={msg}
+              onSpeak={speak}
+              speakingId={speakingId}
+            />
           ))}
         </AnimatePresence>
 
@@ -154,8 +238,14 @@ export function ChatView() {
               <Paperclip size={18} />
             </button>
             <button
-              className="p-2 rounded-lg hover:bg-white/5 text-white/30 hover:text-accent-amber transition-colors"
-              title="Voice input"
+              onClick={toggleListening}
+              className={cn(
+                "p-2 rounded-lg transition-colors relative",
+                isListening
+                  ? "text-accent-amber bg-accent-amber/10 pulse-ring"
+                  : "text-white/30 hover:bg-white/5 hover:text-accent-amber"
+              )}
+              title={isListening ? "Listening... Click to stop" : "Voice input"}
             >
               <Mic size={18} />
             </button>
@@ -201,7 +291,15 @@ export function ChatView() {
 }
 
 // ── Message Bubble ──
-function MessageBubble({ message }: { message: ChatMessage }) {
+function MessageBubble({
+  message,
+  onSpeak,
+  speakingId,
+}: {
+  message: ChatMessage;
+  onSpeak: (id: string, text: string) => void;
+  speakingId: string | null;
+}) {
   const isUser = message.role === "user";
   const isAgent = message.role === "agent";
 
@@ -249,15 +347,30 @@ function MessageBubble({ message }: { message: ChatMessage }) {
         <div className="whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{
           __html: formatMessage(message.content)
         }} />
-        <div className="text-[10px] text-white/20 mt-2 font-mono">
-          {timeAgo(message.timestamp)}
-          {isAgent && message.agentId && (
-            <span
-              className="ml-2"
-              style={{ color: AGENT_COLORS[message.agentId] }}
+        <div className="text-[10px] text-white/20 mt-2 font-mono flex items-center justify-between">
+          <div>
+            {timeAgo(message.timestamp)}
+            {isAgent && message.agentId && (
+              <span
+                className="ml-2"
+                style={{ color: AGENT_COLORS[message.agentId] }}
+              >
+                via {message.agentId}
+              </span>
+            )}
+          </div>
+          {!isUser && (
+            <button
+              onClick={() => onSpeak(message.id, message.content)}
+              className="ml-3 hover:text-white/60 transition-colors inline-flex items-center gap-1"
+              title="Speak response"
             >
-              via {message.agentId}
-            </span>
+              {speakingId === message.id ? (
+                <VolumeX size={12} className="text-accent-amber animate-pulse" />
+              ) : (
+                <Volume2 size={12} />
+              )}
+            </button>
           )}
         </div>
       </div>

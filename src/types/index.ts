@@ -110,6 +110,9 @@ export interface SystemMetrics {
   batteryLevel?: number;
   isCharging?: boolean;
   temperature?: number;
+  totalTokens?: number;
+  inferenceTimeMs?: number;
+  handoffs?: number;
 }
 
 /** Agent graph node for React Flow */

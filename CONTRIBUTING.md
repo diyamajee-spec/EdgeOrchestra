@@ -1,72 +1,62 @@
-# Contributing to Orchestra AI
+# Contributing to EdgeOrchestra 🎻
 
-Thank you for your interest in contributing! 🎵
+Thank you for your interest in contributing to EdgeOrchestra! Follow this guide to set up your local development workspace and build plugins.
 
 ## Development Setup
 
 ### Prerequisites
-- Node.js 20+
-- Rust 1.75+
-- Ollama installed and running
-- pnpm (recommended) or npm
+- Node.js 18+ (Node.js 22 recommended)
+- Rust 1.75+ (wasm32-unknown-unknown target required for plugins)
+- Ollama installed and running local inference
+- npm (default package manager)
 
 ### Getting Started
 
-```bash
-# Clone the repo
-git clone https://github.com/your-org/orchestra-ai.git
-cd orchestra-ai
+You can set up everything instantly using our installers:
+- **macOS/Linux**: `curl -fsSL https://raw.githubusercontent.com/diyamajee-spec/EdgeOrchestra/main/setup.sh | bash`
+- **Windows**: `Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/diyamajee-spec/EdgeOrchestra/main/install.ps1'))`
 
-# Install dependencies
+Or setup manually:
+```bash
+# Clone the repository
+git clone https://github.com/diyamajee-spec/EdgeOrchestra.git
+cd EdgeOrchestra
+
+# Install packages
 npm install
 
-# Start Ollama (in a separate terminal)
-ollama serve
-
-# Pull recommended models
+# Verify Ollama has the models
 ollama pull phi4-mini
-ollama pull moondream
+ollama pull qwen2.5-vl
 
-# Run development server (frontend only)
-npm run dev
-
-# Run full Tauri app
+# Run the Tauri application
 npm run tauri dev
 ```
 
-## Project Structure
+---
 
-```
-orchestra-ai/
-├── src/                    # React frontend
-│   ├── agents/            # Agent configurations
-│   ├── components/        # UI components
-│   ├── lib/              # Utilities & clients
-│   ├── store/            # Zustand state management
-│   └── types/            # TypeScript types
-├── src-tauri/             # Rust backend
-│   └── src/
-│       ├── agents.rs     # Agent router logic
-│       ├── commands.rs   # Tauri command handlers
-│       ├── memory.rs     # Memory management
-│       └── ollama.rs     # Ollama HTTP client
-├── plugins/              # WASM plugin templates
-└── docs/                 # Documentation
-```
+## WASM Plugin Development
 
-## Code Style
+EdgeOrchestra supports custom plugins compiled to WebAssembly. The template is located in `plugins/template/`.
 
-- **TypeScript**: Strict mode, functional components, hooks
-- **Rust**: Standard formatting (`cargo fmt`), clippy clean
-- **CSS**: Tailwind v4 utility classes + custom design tokens
+To create a new plugin:
+1. Copy the `plugins/template/` folder: `cp -r plugins/template/ plugins/my-new-plugin/`
+2. Implement your logic in Rust inside `plugins/my-new-plugin/src/lib.rs`.
+3. Add memory-safe export functions:
+   - `alloc` and `dealloc` (for passing queries from JS/Tauri securely).
+   - `process` (accepts pointer + size, returns output pointer).
+   - `get_info` (returns descriptive plugin metadata JSON).
+4. Compile the plugin:
+   ```bash
+   cd plugins/my-new-plugin
+   cargo build --target wasm32-unknown-unknown --release
+   ```
+5. Upload the resulting `.wasm` file via the app's **Plugin Manager** to test execution in the sandbox!
 
-## Pull Request Process
+---
 
-1. Fork the repo and create a feature branch
-2. Write clean, documented code
-3. Test your changes locally
-4. Submit a PR with a clear description
+## Coding Standards
 
-## Good First Issues
-
-Check the [good-first-issues](https://github.com/your-org/orchestra-ai/labels/good%20first%20issue) label for beginner-friendly tasks.
+- **TypeScript / React 19**: Strictly typed components, utilizing global states in `src/store/orchestra.ts`.
+- **Rust / Tauri 2**: Clean code adhering to `cargo clippy` and `cargo fmt`.
+- **CSS / Styling**: Tailwind CSS v4 layout styling with modern glassmorphism components defined in `src/index.css`.

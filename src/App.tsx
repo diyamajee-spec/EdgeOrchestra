@@ -9,6 +9,8 @@ import { ChatView } from "@/components/chat/ChatView";
 import { AgentsView } from "@/components/agents/AgentsView";
 import { MemoryView } from "@/components/memory/MemoryView";
 import { SettingsView } from "@/components/settings/SettingsView";
+import { PluginsView } from "@/components/plugins/PluginsView";
+import { ShowcaseView } from "@/components/showcase/ShowcaseView";
 import { useOrchestraStore, type OrchestraStore } from "@/store/orchestra";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -18,6 +20,8 @@ const VIEWS = {
   agents: AgentsView,
   memory: MemoryView,
   settings: SettingsView,
+  plugins: PluginsView,
+  showcase: ShowcaseView,
 };
 
 export default function App() {
