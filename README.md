@@ -227,9 +227,3 @@ Distributed under the **MIT License**. See [`LICENSE`](./LICENSE) for details.
 **Built entirely offline. Not a single byte of your data touched a cloud server.**
 
 *Made with 🦀 Rust · ⚛️ React · 🧠 Ollama · 🔒 Privacy by Design*
-
-<br />
-
-[![Star this repo](https://img.shields.io/github/stars/diyamajee-spec/EdgeOrchestra?style=social)](https://github.com/diyamajee-spec/EdgeOrchestra)
-
-</div>
