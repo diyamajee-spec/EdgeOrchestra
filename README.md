@@ -1,80 +1,114 @@
-# 🌌 EdgeOrchestra AI
-### *The Ultimate Local-First Autonomous Agent Matrix*
-**Developed for the Win Elite Coders Open Source Hackathon**
+<div align="center">
+  <img src="https://img.shields.io/badge/Status-Hackathon_Ready-06b6d4?style=for-the-badge&logo=rocket" alt="Status" />
+  <img src="https://img.shields.io/badge/Privacy-100%25_Offline-8b5cf6?style=for-the-badge&logo=shield" alt="Privacy" />
+  <img src="https://img.shields.io/badge/Stack-Tauri_%7C_React_%7C_Rust-ec4899?style=for-the-badge&logo=react" alt="Tech Stack" />
 
-![EdgeOrchestra Banner](https://img.shields.io/badge/Status-Hackathon_Ready-06b6d4?style=for-the-badge) ![Offline First](https://img.shields.io/badge/Cloud_Free-100%25_Local-8b5cf6?style=for-the-badge)
+  <br />
+  <br />
 
-EdgeOrchestra is a highly advanced, deeply technical **multi-agent AI orchestration platform** designed to run entirely on local hardware. By leveraging Ollama and native WebAssembly (Wasm) execution environments, EdgeOrchestra eliminates cloud dependency, ensuring 100% data privacy, zero latency limits, and full offline capability.
+  <h1 align="center">🌌 EdgeOrchestra AI</h1>
+  <p align="center">
+    <strong>The Ultimate Local-First Autonomous Agent Matrix</strong>
+    <br />
+    <em>Developed for the Win Elite Coders Open Source Hackathon</em>
+  </p>
+</div>
 
----
+<br />
 
-## ⚡ Core Hackathon Features
+## 📖 Overview
 
-### 1. 🧠 Autonomous Agent Swarm
-Watch as your requests are dynamically routed. The **Intent Matrix Analyzer** intercepts natural language, parses the request, and delegates tasks to a swarm of local specialist agents (Vision, Planner, Research, Action, Creative, Memory).
+**EdgeOrchestra AI** is an advanced, privacy-first multi-agent orchestration platform designed to run entirely on local hardware. By coupling native WebAssembly (Wasm) execution environments with local LLM inference engines (like Ollama), EdgeOrchestra guarantees **100% data privacy**, **zero cloud-latency**, and **complete offline autonomy**.
 
-### 2. 🚀 Full Orchestra Parallel Burst
-Push your local silicon to the absolute limit. EdgeOrchestra features a true parallel execution engine. By triggering the *Full Orchestra Burst Mode*, the router will spawn concurrent Web Workers to execute 5 specialist agents simultaneously. 
-
-### 3. 🎯 Interactive Data Graph
-The system architecture isn't hidden—it's interactive. Drag and drop local system files (like images) directly onto the ReactFlow Agent Graph nodes to instantly trigger deep offline vector analysis.
-
-### 4. 🎨 Cinematic Color Core Engine
-A fully custom CSS Variable Engine allows you to instantly swap the visual identity of the app. Toggle between the pristine **Cyan Core**, the heavily-contrasted **Matrix Green**, or the vibrant **Vaporwave**. 
-
-### 5. 💻 Raw IPC Inspector (DevTools)
-Press `Ctrl + Shift + I` anywhere in the app to slide up the **DevTools Inspector Drawer**. Watch the raw IPC events, Memory hex allocations, and `Loro` CRDT sync logs fly by in real-time as the agents communicate. 
+Unlike traditional cloud-based AI tools that compromise your proprietary data, EdgeOrchestra routes complex tasks through a local network of highly specialized AI agents—all communicating via zero-copy IPC memory streams.
 
 ---
 
-## 🛠️ Architecture Stack
+## ✨ Core Hackathon Features
 
-- **Frontend:** React, Tailwind CSS v4, Framer Motion (for buttery smooth cubic-bezier transitions).
-- **Desktop Runtime:** Tauri (Rust) for zero-copy file system access and OS-level operations.
-- **AI Inference Engine:** Ollama (Local LLM hosting).
-- **State & Memory:** Zustand + Loro (Conflict-free Replicated Data Types for P2P state sync).
-- **Graph Visualization:** ReactFlow / XYFlow.
+### 🧠 Autonomous Agent Graph
+A dynamic, intelligent router that parses natural language intent and constructs real-time execution dependencies. It automatically delegates workloads across a swarm of specialized local agents: **Vision**, **Planner**, **Research**, **Action**, **Creative**, and **Memory**.
 
----
+### 🚀 Full Orchestra Parallel Burst
+By triggering the *Full Orchestra Burst Mode*, the router unlocks parallel constraints and spawns concurrent Web Workers. This stress-tests local silicon by executing all 5 specialist agents simultaneously, merging their outputs into a single, cohesive workflow.
 
-## 🚀 Installation & Setup
+### 🎯 Interactive Workspace (Drag & Drop)
+The system architecture isn't hidden behind a black box—it is fully interactive. Drag and drop local files or images directly onto the interactive ReactFlow **Agent Graph nodes** to instantly trigger targeted, offline data analysis.
 
-1. **Prerequisites:**
-   - Install [Node.js](https://nodejs.org/)
-   - Install [Rust & Cargo](https://www.rust-lang.org/tools/install)
-   - Install [Ollama](https://ollama.com/) (Required for local inference)
+### 🎨 Cinematic Color Core Engine
+A fully custom CSS Variable Engine allows users to instantly swap the visual identity of the matrix. Toggle between the pristine **Cyan Core**, the heavily-contrasted **Matrix Green**, or the vibrant **Vaporwave** modes on the fly.
 
-2. **Clone & Install:**
-   ```bash
-   git clone https://github.com/diyamajee-spec/EdgeOrchestra.git
-   cd EdgeOrchestra
-   npm install
-   ```
+### 💻 Raw IPC Inspector (DevTools)
+Press `Ctrl + Shift + I` (or `Cmd + Shift + I`) anywhere in the application to slide up the **DevTools Inspector**. Watch raw IPC events, Memory hex allocations, and `Loro` CRDT state synchronization logs fly by in real-time as the agents communicate.
 
-3. **Pull Local Models:**
-   Start Ollama in your terminal, then pull the required specialist models:
-   ```bash
-   ollama pull phi4-mini
-   ollama pull qwen2.5-vl:7b
-   ```
-
-4. **Launch the Matrix:**
-   ```bash
-   npm run tauri dev
-   ```
+### 🔊 Haptic Audio & Cinematic Boot
+Experience a 4-second cinematic system boot sequence featuring a Matrix code-rain background and a hardware profiler HUD. Inline chat terminals feature zero-dependency Web Audio API oscillators, emitting synthesized mechanical clicks for every log printed.
 
 ---
 
-## 🎮 How to Demo for Judges (WOW Factors)
+## 🏗️ Technical Architecture
 
-During your presentation, make sure to execute these specific workflows to show off the platform's power:
+EdgeOrchestra is built on a modern, high-performance tech stack engineered for offline superiority:
 
-1. **The Cinematic Boot:** Simply open the app. Let the judges watch the 4-second boot sequence, the Matrix code rain, and the hardware profiler HUD.
-2. **The IPC Inspector:** Press `Ctrl + Shift + I` to open the hidden terminal drawer and show them the real-time logs.
-3. **Trigger Parallel Execution:** Go to the *Showcase* tab and click **Launch Workflow** on the `Full Orchestra Parallel Burst` card. Watch the Chat UI open the Process Analyzer and hear the synthesized audio haptics!
-4. **Interactive Node Drop:** Go to the *Dashboard*, minimize the window slightly, and drag an image from your desktop directly onto the **Vision Node** to trigger an autonomous workflow.
+| Layer | Technology | Purpose |
+|-------|------------|---------|
+| **Frontend Framework** | React + TypeScript | Robust, type-safe component architecture. |
+| **Styling & Physics** | Tailwind CSS v4 + Framer Motion | High-fidelity glassmorphism, dynamic theming, and buttery-smooth cubic-bezier spring animations. |
+| **Desktop Runtime** | Tauri (Rust) | Lightweight OS-level operations, secure sandboxing, and zero-copy file system access. |
+| **Local Inference** | Ollama | On-device hosting of LLMs (`phi4-mini`, `qwen2.5-vl`). |
+| **State Management** | Zustand + Loro | Conflict-free Replicated Data Types (CRDTs) for offline-capable P2P memory synchronization. |
+| **Data Visualization** | ReactFlow / XYFlow | Interactive, node-based agent relationship mapping. |
 
 ---
 
-### License
-MIT License. Built entirely offline. No cloud APIs were harmed in the making of this project.
+## 🚀 Quick Start Guide
+
+### 1. Prerequisites
+Ensure you have the following installed on your machine:
+- [Node.js](https://nodejs.org/) (v18+)
+- [Rust & Cargo](https://www.rust-lang.org/tools/install)
+- [Ollama](https://ollama.com/) (Required for local agent inference)
+
+### 2. Clone & Install
+```bash
+git clone https://github.com/diyamajee-spec/EdgeOrchestra.git
+cd EdgeOrchestra
+npm install
+```
+
+### 3. Provision Local AI Models
+Start the Ollama daemon in your terminal, then pull the required specialist models:
+```bash
+ollama pull phi4-mini
+ollama pull qwen2.5-vl:7b
+```
+
+### 4. Ignite the Matrix
+```bash
+npm run tauri dev
+```
+
+---
+
+## 🎮 Live Demonstration Guide
+
+When showcasing EdgeOrchestra to the judges, follow this sequence to maximize impact:
+
+1. **The Cold Boot:** Launch the application and let the judges observe the 4-second cinematic boot sequence, hardware profiler HUD, and Matrix code rain.
+2. **The IPC Inspector:** Immediately press `Ctrl + Shift + I` to reveal the hidden terminal drawer and demonstrate the live system logging.
+3. **Parallel Execution:** Navigate to the **Showcase** tab and click **Launch Workflow** under the `Full Orchestra Parallel Burst` card. Watch the chat UI pop open the Process Analyzer, accompanied by synthesized audio haptics.
+4. **Interactive Graph Injection:** Return to the **Dashboard**, slightly minimize the window, and drag an image from your desktop directly onto the **Vision Node** to autonomously trigger the visual-language model.
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions from the elite coding community. Please see our [CONTRIBUTING.md](./CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) for guidelines on how to submit pull requests, report bugs, and propose new features.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**. 
+
+*Built entirely offline. No cloud APIs were harmed in the making of this project.*
