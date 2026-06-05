@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="https://img.shields.io/badge/Status-Hackathon_Ready-06b6d4?style=for-the-badge&logo=rocket" alt="Status" />
   <img src="https://img.shields.io/badge/Privacy-100%25_Offline-8b5cf6?style=for-the-badge&logo=shield" alt="Privacy" />
   <img src="https://img.shields.io/badge/Stack-Tauri_%7C_React_%7C_Rust-ec4899?style=for-the-badge&logo=react" alt="Tech Stack" />
 
@@ -114,24 +113,6 @@ ollama pull qwen2.5-vl:7b
 ```bash
 npm run tauri dev
 ```
-
----
-
-## 🎮 Live Demonstration Guide
-
-When showcasing EdgeOrchestra to the judges, follow this sequence to maximize impact:
-
-1. **The Cold Boot:** Launch the application and let the judges observe the 4-second cinematic boot sequence, hardware profiler HUD, and Matrix code rain.
-2. **The IPC Inspector:** Immediately press `Ctrl + Shift + I` to reveal the hidden terminal drawer and demonstrate the live system logging.
-3. **Parallel Execution:** Navigate to the **Showcase** tab and click **Launch Workflow** under the `Full Orchestra Parallel Burst` card. Watch the chat UI pop open the Process Analyzer, accompanied by synthesized audio haptics.
-4. **Interactive Graph Injection:** Return to the **Dashboard**, slightly minimize the window, and drag an image from your desktop directly onto the **Vision Node** to autonomously trigger the visual-language model.
-
----
-
-## 🤝 Contributing
-
-We welcome contributions from the elite coding community. Please see our [CONTRIBUTING.md](./CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) for guidelines on how to submit pull requests, report bugs, and propose new features.
-
 ---
 
 ## 📄 License
