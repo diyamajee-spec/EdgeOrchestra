@@ -5,7 +5,7 @@ import { useOrchestraStore } from "@/store/orchestra";
 import { Settings, Server, Cpu, Palette, Info } from "lucide-react";
 
 export function SettingsView() {
-  const { ollamaConnected, activeModel, setActiveModel, ollamaModels, checkOllama } = useOrchestraStore();
+  const { ollamaConnected, activeModel, setActiveModel, ollamaModels, checkOllama, theme, setTheme, themePreset, setThemePreset } = useOrchestraStore();
   const [ollamaUrl, setOllamaUrl] = useState("http://localhost:11434");
 
   return (
@@ -35,6 +35,28 @@ export function SettingsView() {
           <option value="moondream:latest">moondream:latest</option>
           {ollamaModels.map(m=><option key={m.name} value={m.name}>{m.name}</option>)}
         </select>
+      </motion.div>
+
+      {/* Theme Selection */}
+      <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.15}} className="glass rounded-2xl p-5 space-y-4">
+        <div className="flex items-center gap-2"><Palette size={16} className="text-accent-violet"/><h3 className="text-sm font-semibold text-white/70">Theme Engine</h3></div>
+        
+        <div className="space-y-2">
+          <p className="text-xs text-white/30">Base Mode</p>
+          <div className="flex gap-4">
+            <button onClick={() => setTheme("dark")} className={`flex-1 py-2 rounded-xl text-sm font-medium transition-colors ${theme === "dark" ? "bg-accent-violet/20 text-accent-violet" : "bg-surface-2 text-white/40 hover:bg-surface-3"}`}>Dark Mode</button>
+            <button onClick={() => setTheme("light")} className={`flex-1 py-2 rounded-xl text-sm font-medium transition-colors ${theme === "light" ? "bg-accent-violet/20 text-accent-violet" : "bg-surface-2 text-white/40 hover:bg-surface-3"}`}>Light Mode</button>
+          </div>
+        </div>
+
+        <div className="space-y-2 pt-2 border-t border-white/5">
+          <p className="text-xs text-white/30">Color Core (Hackathon Showcase)</p>
+          <div className="flex gap-3">
+            <button onClick={() => setThemePreset("default")} className={`flex-1 py-2 rounded-xl text-xs font-bold tracking-widest transition-colors ${themePreset === "default" ? "bg-cyan-500/20 text-cyan-400" : "bg-surface-2 text-white/40 hover:bg-surface-3"}`}>CYAN CORE</button>
+            <button onClick={() => setThemePreset("matrix")} className={`flex-1 py-2 rounded-xl text-xs font-bold tracking-widest transition-colors ${themePreset === "matrix" ? "bg-emerald-500/20 text-emerald-400" : "bg-surface-2 text-white/40 hover:bg-surface-3"}`}>MATRIX GREEN</button>
+            <button onClick={() => setThemePreset("vaporwave")} className={`flex-1 py-2 rounded-xl text-xs font-bold tracking-widest transition-colors ${themePreset === "vaporwave" ? "bg-pink-500/20 text-pink-400" : "bg-surface-2 text-white/40 hover:bg-surface-3"}`}>VAPORWAVE</button>
+          </div>
+        </div>
       </motion.div>
 
       {/* About */}

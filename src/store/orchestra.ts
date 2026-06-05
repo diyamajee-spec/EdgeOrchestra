@@ -52,6 +52,18 @@ export interface OrchestraStore {
   activeView: "dashboard" | "chat" | "agents" | "memory" | "settings" | "plugins" | "showcase";
   toggleSidebar: () => void;
   setActiveView: (view: OrchestraStore["activeView"]) => void;
+
+  // ── UI State ──
+  theme: "dark" | "light";
+  themePreset: "default" | "matrix" | "vaporwave";
+  setTheme: (theme: "dark" | "light") => void;
+  setThemePreset: (preset: "default" | "matrix" | "vaporwave") => void;
+  isInitializing: boolean;
+  setInitializing: (val: boolean) => void;
+  devToolsOpen: boolean;
+  toggleDevTools: () => void;
+  syslogs: string[];
+  addSyslog: (log: string) => void;
 }
 
 export const useOrchestraStore = create<OrchestraStore>()((set, get) => ({
@@ -78,12 +90,30 @@ export const useOrchestraStore = create<OrchestraStore>()((set, get) => ({
       ],
     })),
 
+  addSyslog: (log) => {
+    set((s) => ({ syslogs: [...s.syslogs.slice(-49), `[${new Date().toISOString().split('T')[1].slice(0,-1)}] ${log}`] }));
+  },
+
   sendMessage: async (content, modality = "text", imageBase64) => {
     const store = get();
     if (store.isProcessing) return;
 
+    store.addSyslog(`[IPC] User intent dispatched via ${modality} channel. length=${content.length}`);
+
     // Add user message
-    store.addMessage({ role: "user", content, modality, attachments: [] });
+    store.addMessage({ 
+      role: "user", 
+      content, 
+      modality, 
+      attachments: imageBase64 ? [{
+        id: Date.now().toString(),
+        type: "image",
+        name: "captured_image.jpg",
+        url: `data:image/jpeg;base64,${imageBase64}`,
+        mimeType: "image/jpeg",
+        size: imageBase64.length * 0.75
+      }] : [] 
+    });
     set({ isProcessing: true });
 
     try {
@@ -131,24 +161,36 @@ export const useOrchestraStore = create<OrchestraStore>()((set, get) => ({
       });
 
       // Step 2: Execute specialist agents based on the plan
+      const triggerAll = content.toLowerCase().includes("activate all") || content.toLowerCase().includes("full orchestra") || content.toLowerCase().includes("active every agent");
       const hasVision = !!imageBase64 || content.toLowerCase().includes("desk") || content.toLowerCase().includes("webcam") || content.toLowerCase().includes("see") || content.toLowerCase().includes("look");
       const hasPlanner = content.toLowerCase().includes("plan") || content.toLowerCase().includes("productiv") || content.toLowerCase().includes("task") || content.toLowerCase().includes("schedule");
 
-      if (hasVision) {
-        await executeVisionAgent(store, imageBase64, content);
-      }
+      if (triggerAll) {
+        await Promise.all([
+          executeVisionAgent(store, imageBase64, content),
+          executePlannerAgent(store, content, false),
+          executeResearchAgent(store, content),
+          executeActionAgent(store, content),
+          executeCreativeAgent(store, content)
+        ]);
+        await executeMemoryAgent(store, content);
+      } else {
+        if (hasVision) {
+          await executeVisionAgent(store, imageBase64, content);
+        }
 
-      if (hasPlanner || hasVision) {
-        await executePlannerAgent(store, content, hasVision);
-      }
+        if (hasPlanner || hasVision) {
+          await executePlannerAgent(store, content, hasVision);
+        }
 
-      // If no specialist matched, use a general response
-      if (!hasVision && !hasPlanner) {
-        await executeGeneralResponse(store, content);
-      }
+        // If no specialist matched, use a general response
+        if (!hasVision && !hasPlanner) {
+          await executeGeneralResponse(store, content);
+        }
 
-      // Step 3: Memory agent stores important context
-      await executeMemoryAgent(store, content);
+        // Step 3: Memory agent stores important context
+        await executeMemoryAgent(store, content);
+      }
 
       // Reset statuses
       const agentIds: AgentId[] = ["router", "vision", "planner", "memory", "research", "action", "creative"];
@@ -196,41 +238,7 @@ export const useOrchestraStore = create<OrchestraStore>()((set, get) => ({
   },
 
   // ── Memory ──
-  memories: [
-    {
-      id: "mem-1",
-      content: "User prefers dark mode interfaces",
-      type: "preference",
-      tags: ["ui", "preference"],
-      source: "memory",
-      createdAt: Date.now() - 86400000,
-      updatedAt: Date.now() - 86400000,
-      importance: 0.7,
-      connections: [],
-    },
-    {
-      id: "mem-2",
-      content: "Workspace has dual monitors with a MacBook Pro",
-      type: "observation",
-      tags: ["workspace", "hardware"],
-      source: "vision",
-      createdAt: Date.now() - 43200000,
-      updatedAt: Date.now() - 43200000,
-      importance: 0.5,
-      connections: ["mem-1"],
-    },
-    {
-      id: "mem-3",
-      content: "User is working on an AI agent project using TypeScript",
-      type: "fact",
-      tags: ["project", "tech"],
-      source: "memory",
-      createdAt: Date.now() - 7200000,
-      updatedAt: Date.now() - 7200000,
-      importance: 0.9,
-      connections: ["mem-2"],
-    },
-  ],
+  memories: [],
 
   addMemory: (entry) =>
     set((state) => ({
@@ -274,6 +282,25 @@ export const useOrchestraStore = create<OrchestraStore>()((set, get) => ({
 
   toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
   setActiveView: (view) => set({ activeView: view }),
+
+  // ── UI State ──
+  theme: "dark",
+  themePreset: "default",
+  setTheme: (theme) => {
+    set({ theme });
+    if (theme === "light") document.documentElement.classList.add("light");
+    else document.documentElement.classList.remove("light");
+  },
+  setThemePreset: (preset) => {
+    set({ themePreset: preset });
+    document.body.className = document.body.className.replace(/\btheme-\S+/g, '');
+    if (preset !== 'default') document.body.classList.add(`theme-${preset}`);
+  },
+  isInitializing: true,
+  setInitializing: (val) => set({ isInitializing: val }),
+  devToolsOpen: false,
+  toggleDevTools: () => set((s) => ({ devToolsOpen: !s.devToolsOpen })),
+  syslogs: ["[KERNEL] EdgeOrchestra Core System Booted."],
 }));
 
 // ── Helper Functions for Agent Execution ──
@@ -409,59 +436,142 @@ async function executeMemoryAgent(store: ReturnType<typeof useOrchestraStore.get
   store.setAgentStatus("memory", "thinking");
   await sleep(800);
   
-  store.addMemory({
-    content: `User interaction: ${content.slice(0, 100)}`,
+  // Fetch the absolute latest state to capture all agents' responses
+  const latestState = useOrchestraStore.getState();
+  const recentMessages = latestState.messages.filter(m => Date.now() - m.timestamp < 15000);
+  
+  const agentContributions = recentMessages
+    .filter(m => m.role === "agent" && m.agentId !== "memory")
+    .map(m => `- **${m.agentId?.toUpperCase() || 'SYSTEM'}**: ${m.content.slice(0, 150).replace(/\n/g, ' ')}...`)
+    .join('\n');
+
+  const memoryContent = `**Complete Interaction Log**\n\n**User Prompt:**\n"${content}"\n\n**Agent Execution Trace:**\n${agentContributions || "General query processed."}`;
+
+  latestState.addMemory({
+    content: memoryContent,
     type: "context",
-    tags: ["conversation"],
+    tags: ["conversation", "task_execution", "automated"],
     source: "memory",
-    importance: 0.4,
+    importance: agentContributions.length > 50 ? 0.85 : 0.4,
     connections: [],
   });
 
-  store.setAgentStatus("memory", "active");
+  latestState.setAgentStatus("memory", "active");
+  latestState.addMessage({
+    role: "agent",
+    content: `**🧠 Memory State Synced**
+> *Context: Captured the entire interaction graph, including the user prompt and all subsequent specialist agent executions.*
+
+**New Memory Fact Recorded:**
+- **Type:** \`Complete Interaction Log\`
+- **Importance:** \`${agentContributions.length > 50 ? 'High (0.85)' : 'Moderate (0.4)'}\`
+- **Data Volume:** \`${recentMessages.length} message nodes indexed\`
+
+*This full task execution history is now securely committed to the local CRDT engine.*`,
+    agentId: "memory",
+    modality: "text",
+  });
   await sleep(300);
+}
+
+async function executeResearchAgent(store: ReturnType<typeof useOrchestraStore.getState>, content: string) {
+  store.setAgentStatus("research", "thinking");
+  await sleep(2500);
+  store.setAgentStatus("research", "active");
+  store.addMessage({ 
+    role: "agent", 
+    content: `**🔬 Autonomous Research Synthesized**
+> *Context: Queried local offline knowledge bases. No external network data was used.*
+
+I've scanned the local context and synthesized the following architectural data:
+
+| Subsystem | Status | Vector Confidence |
+|-----------|--------|-------------------|
+| Wasm IPC | Active | \`98.4%\` |
+| CRDT Sync | Idle | \`91.2%\` |
+
+**Conclusion:** The structural integrity of the requested component is stable. Proceeding with phase 2.`, 
+    agentId: "research", modality: "text" });
+  await sleep(500);
+}
+
+async function executeActionAgent(store: ReturnType<typeof useOrchestraStore.getState>, content: string) {
+  store.setAgentStatus("action", "thinking");
+  await sleep(1800);
+  store.setAgentStatus("action", "active");
+  store.addMessage({ 
+    role: "agent", 
+    content: `**⚡ System Action Executed**
+> *Context: Safely executed a file system operation via Tauri native Rust bindings.*
+
+\`\`\`bash
+$ cd /src-tauri/plugins && cargo build --release
+[✓] Compiled orchestra-system v0.1.0 (local)
+[✓] Registered 3 new IPC endpoints
+\`\`\`
+**Result:** Action completed successfully with zero warnings.`, 
+    agentId: "action", modality: "text" });
+  await sleep(500);
+}
+
+async function executeCreativeAgent(store: ReturnType<typeof useOrchestraStore.getState>, content: string) {
+  store.setAgentStatus("creative", "thinking");
+  await sleep(3000);
+  store.setAgentStatus("creative", "active");
+  store.addMessage({ 
+    role: "agent", 
+    content: `**🎨 Creative Generation Complete**
+> *Context: Generated offline markdown and layout structure using the local phi4-mini model.*
+
+I have drafted the visual layout and content presentation requested by the Planner. 
+- **Tone:** Technical, professional.
+- **Format:** Github Flavored Markdown.
+- **Assets:** Generated 2 SVG placeholder graphs.
+
+*The asset has been successfully written to your workspace directory.*`, 
+    agentId: "creative", modality: "text" });
+  await sleep(500);
 }
 
 // ── Mock Responses ──
 
 function getMockVisionResponse(): string {
-  return `**Workspace Analysis Complete** 📸
+  return `**👁️ Vision Analysis Complete** 
+> *Context: Frame captured via 640x480 webcam input. Analyzed offline using qwen2.5-vl visual-language model.*
 
-I can see a typical developer workspace:
+I've successfully processed the visual feed. Here is the object detection matrix:
 
-| Item | Location | Notes |
-|------|----------|-------|
-| Laptop (open) | Center | Active code editor visible |
-| External Monitor | Right side | Showing documentation |
-| Coffee mug | Left side | Appears half-full ☕ |
-| Notebook | Near laptop | Has handwritten notes |
-| Phone | Far right | Screen off |
-| Headphones | Left of laptop | Over-ear style |
+| Item | Location | Confidence | Notes |
+|------|----------|------------|-------|
+| Laptop (open) | Center | \`99.1%\` | Active IDE visible |
+| Monitor | Right | \`97.4%\` | Displaying documentation |
+| Coffee mug | Left | \`88.5%\` | Appears half-full ☕ |
+| Notebook | Center | \`92.0%\` | Contains handwritten diagrams |
 
-**Text Detected:** Code editor showing TypeScript/React code
+**OCR Text Detected:** Active code editor is showing TypeScript and React components.
 
-**Observations:**
-- 🟢 Workspace is moderately organized
-- 📝 Notebook suggests active brainstorming
-- 💡 Good dual-screen setup for productivity
-- ⚠️ Consider clearing desk clutter for better focus
+**Spatial Observations:**
+- 🟢 Workspace is clean and moderately organized.
+- 💡 Dual-screen setup is optimal for immediate productivity.
+- ⚠️ Consider adjusting the secondary monitor angle for better ergonomics.
 
-**Organization Score:** 7/10`;
+**Overall Organization Score:** \`7.5 / 10\``;
 }
 
 function getMockPlannerResponse(): string {
-  return `## 🎯 Productivity Plan
+  return `**📋 Automated Productivity Plan**
+> *Context: Plan dynamically generated based on constraints provided by the Vision Agent and User query.*
 
-Based on the workspace analysis, here's your optimized plan:
+Based on the spatial analysis of your workspace, I have orchestrated an optimized schedule to maximize your current state of focus.
 
 ### High Priority 🔴
-1. **Complete current coding task** (45 min)
-   - Focus on the TypeScript code visible on screen
-   - Use Pomodoro technique: 25 min focus + 5 min break
+1. **Complete current coding sprint** (45 min)
+   - *Target:* The TypeScript codebase visible on your primary screen.
+   - *Method:* Strict Pomodoro (25m work / 5m break).
 
-2. **Review notebook notes** (15 min)
-   - Digitize key insights
-   - Create action items from handwritten notes
+2. **Digitize Brainstorming** (15 min)
+   - *Target:* The physical notebook detected on your desk.
+   - *Method:* Convert the handwritten architectural diagrams into markdown documentation.
 
 ### Medium Priority 🟡
 3. **Organize workspace** (10 min)

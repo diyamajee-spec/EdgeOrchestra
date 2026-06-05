@@ -25,7 +25,8 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "lint": "eslint .",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "test": "vitest run"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",
@@ -44,11 +45,13 @@
     "@xyflow/react": "^12.6.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
     "framer-motion": "^12.15.0",
     "loro-crdt": "^1.5.4",
     "lucide-react": "^0.511.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-joyride": "^3.1.0",
     "react-router-dom": "^7.6.1",
     "recharts": "^2.15.3",
     "tailwind-merge": "^3.3.0",
@@ -57,15 +60,19 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.8",
     "@tauri-apps/cli": "^2.5.0",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^14.2.2",
     "@types/node": "^25.9.1",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
     "@vitejs/plugin-react": "^4.5.2",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.27.0",
+    "jsdom": "^24.0.0",
     "postcss": "^8.5.4",
     "tailwindcss": "^4.1.8",
     "typescript": "^5.8.3",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vitest": "^1.5.0"
   }
 }

@@ -1,58 +1,29 @@
-# Architecture
+# System Architecture
 
-## System Overview
+EdgeOrchestra AI is built on a robust, multi-layered architecture designed to maximize privacy, performance, and offline capabilities. The core stack relies on **Tauri 2**, **React 19**, **Loro CRDTs**, and a sandboxed **WebAssembly (Wasm)** plugin system.
 
-Orchestra AI is a local-first, privacy-preserving multimodal AI agent platform. All inference runs on-device via Ollama.
+## 1. Tauri 2 & React 19 Frontend
+- **Tauri 2** forms the lightweight desktop shell. It handles OS-level APIs, file system access, and spawns the Rust backend.
+- **React 19** powers the user interface, managing state and providing a reactive, component-based dashboard. We use `React Flow` to visualize the agent collaboration graph dynamically.
 
-## Agent Architecture
+## 2. IPC (Inter-Process Communication)
+Tauri enables secure communication between the React frontend and the Rust backend. When a user requests an action (e.g., loading a plugin, querying Ollama), the frontend sends a command via Tauri IPC. The Rust backend processes this securely and returns the result, ensuring that heavy computations don't block the UI thread.
 
-```mermaid
-graph TD
-    User[User Input] --> Router[🎯 Router Agent]
-    Router --> Vision[👁️ Vision Agent]
-    Router --> Planner[📋 Planner Agent]
-    Router --> Memory[🧠 Memory Agent]
-    Router --> Research[🔬 Research Agent]
-    Router --> Action[⚡ Action Agent]
-    Router --> Creative[🎨 Creative Agent]
-    
-    Vision --> |analysis| Planner
-    Planner --> |tasks| Action
-    Memory --> |context| Router
-    
-    Ollama[Ollama Server] --> |inference| Vision
-    Ollama --> |inference| Planner
-    Ollama --> |inference| Router
-    
-    Memory --> CRDT[Loro CRDT Sync]
-    CRDT --> |sync| Device2[Other Devices]
-```
+## 3. Sandboxed Wasm Plugins
+To allow extensibility without compromising security, EdgeOrchestra uses a WebAssembly sandbox for plugins.
+- Plugins are written in Rust and compiled to the `wasm32-unknown-unknown` target.
+- The Tauri Rust backend loads `.wasm` files securely into an isolated runtime (e.g., Wasmtime or Wasmer).
+- Plugins are restricted to interacting only through memory-safe export functions (`alloc`, `dealloc`, `process`, `get_info`), preventing unauthorized file system or network access.
 
-## Tech Stack
+## 4. State Management with Loro CRDTs
+EdgeOrchestra AI needs to maintain complex local state (agent memory, chat history, system config) and eventually sync it across devices without relying on a central database.
+- **Loro CRDTs** (Conflict-free Replicated Data Types) are used to manage this state.
+- Every state change is recorded as a deterministic operation.
+- Devices can synchronize by exporting delta byte arrays, merging state effortlessly and resolving conflicts mathematically without data loss.
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 19 + TypeScript + Vite |
-| Styling | Tailwind CSS v4 + Framer Motion |
-| State | Zustand |
-| Visualization | React Flow |
-| Desktop | Tauri 2 (Rust) |
-| AI Inference | Ollama (local) |
-| Memory Sync | Loro CRDT |
-| Vector Store | ChromaDB (optional) |
-| Plugins | WASM (Rust → WebAssembly) |
+## 5. Local Inference Engine (Ollama)
+At the heart of the AI orchestration is **Ollama**, running 100% locally.
+- **phi4-mini**: Acts as the intelligent "Router Agent", parsing intents and delegating tasks to other agents.
+- **qwen2.5-vl**: Used as the "Vision Agent" for spatial awareness and multimodal context directly from the user's desktop or webcam.
 
-## Data Flow
-
-1. **User Input** → Text, image, voice, or file
-2. **Router Agent** → Classifies intent, creates orchestration plan
-3. **Specialist Agents** → Execute plan steps (possibly in parallel)
-4. **Memory Agent** → Stores context for future sessions
-5. **Response** → Aggregated results displayed in chat
-
-## Privacy Model
-
-- All processing happens on-device
-- No telemetry or analytics
-- CRDT sync is peer-to-peer (no cloud)
-- Models run locally via Ollama
+This architectural synergy ensures an incredibly fast, private, and highly capable desktop AI assistant.

@@ -2,7 +2,7 @@
    Agent Graph — React Flow visualization of agent relationships
    ────────────────────────────────────────────────────────── */
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useEffect, useState } from "react";
 import {
   ReactFlow,
   Background,
@@ -13,6 +13,8 @@ import {
   type NodeTypes,
   Handle,
   Position,
+  useNodesState,
+  useEdgesState,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { motion } from "framer-motion";
@@ -22,6 +24,37 @@ import { cn } from "@/lib/utils";
 
 // ── Custom Agent Node ──
 function AgentFlowNode({ data }: { data: AgentConfig & { messageCount: number } }) {
+  const [isDragOver, setIsDragOver] = useState(false);
+  
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      if (file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64 = reader.result as string;
+          useOrchestraStore.getState().sendMessage(`[Dropped File Analysis] Analyze this image targeting the ${data.name} node.`, "image", base64);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        useOrchestraStore.getState().sendMessage(`[Dropped File] User dropped ${file.name} onto the ${data.name} node. Please analyze.`, "text");
+      }
+      useOrchestraStore.getState().setActiveView("chat");
+    }
+  };
+
   const statusColor = {
     idle: "border-white/10",
     active: "border-accent-emerald/50",
@@ -32,20 +65,24 @@ function AgentFlowNode({ data }: { data: AgentConfig & { messageCount: number } 
 
   return (
     <motion.div
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
       animate={
         data.status === "thinking"
           ? { scale: [1, 1.05, 1], transition: { repeat: Infinity, duration: 1.5 } }
-          : { scale: 1 }
+          : { scale: isDragOver ? 1.05 : 1 }
       }
       className={cn(
-        "relative px-4 py-3 rounded-2xl border-2 glass min-w-[140px]",
-        statusColor[data.status]
+        "relative px-4 py-3 rounded-2xl border-2 glass min-w-[140px] transition-colors cursor-pointer",
+        statusColor[data.status],
+        isDragOver && "bg-cyan-500/20 border-cyan-400 border-dashed"
       )}
       style={{
         boxShadow:
           data.status === "active"
             ? `0 0 25px -5px ${data.color}50`
-            : "none",
+            : isDragOver ? "0 0 20px 0 rgba(6,182,212,0.4)" : "none",
       }}
     >
       <Handle
@@ -55,7 +92,12 @@ function AgentFlowNode({ data }: { data: AgentConfig & { messageCount: number } 
       />
 
       <div className="flex items-center gap-2 mb-1">
-        <span className="text-lg">{data.icon}</span>
+        <span className={cn(
+          "text-lg relative flex items-center justify-center w-8 h-8 rounded-full text-current",
+          data.status === "thinking" && "pulse-ring shimmer"
+        )}>
+          {data.icon}
+        </span>
         <span className="text-xs font-bold text-white/80">{data.name}</span>
       </div>
 
@@ -124,7 +166,7 @@ export function AgentGraph() {
       id: `router-${agent.id}`,
       source: "router",
       target: agent.id,
-      animated: agents.router.status === "active" || agent.status === "active" || agent.status === "thinking",
+      animated: agent.status === "active" || agent.status === "thinking",
       style: {
         stroke:
           agent.status === "active"
@@ -137,13 +179,24 @@ export function AgentGraph() {
     }));
   }, [agents]);
 
+  const [rfNodes, setRfNodes, onNodesChange] = useNodesState(nodes);
+  const [rfEdges, setRfEdges, onEdgesChange] = useEdgesState(edges);
+
+  // Sync derived nodes/edges with React Flow state so dimensions can be captured
+  useEffect(() => {
+    setRfNodes(nodes);
+    setRfEdges(edges);
+  }, [nodes, edges, setRfNodes, setRfEdges]);
+
   const onInit = useCallback(() => {}, []);
 
   return (
     <div className="w-full h-full rounded-2xl overflow-hidden border border-white/5">
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
+        nodes={rfNodes}
+        edges={rfEdges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
         onInit={onInit}
         fitView
@@ -156,6 +209,7 @@ export function AgentGraph() {
           nodeStrokeWidth={3}
           zoomable
           pannable
+          maskColor="rgba(0, 0, 0, 0.4)"
           nodeColor={(n) => {
             const agent = agents[n.id as keyof typeof agents];
             return agent?.color || "#6366f1";

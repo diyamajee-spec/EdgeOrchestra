@@ -74,6 +74,83 @@ const HACKATHON_WORKFLOWS: ShowcaseWorkflow[] = [
       "Active state stores refresh globally with zero data loss."
     ],
     performanceMetric: "Sync Latency: <15ms · 100% Offline-capable P2P sync"
+  },
+  {
+    id: "deep_research",
+    title: "📚 Autonomous Deep Research",
+    tagline: "Research + Planner + Creative collaboration",
+    description: "Orchestra queries offline knowledge bases, synthesizes complex topics, plans a curriculum structure, and generates beautifully formatted study guides without any internet access.",
+    prompt: "Research local AI architectures, plan a structured guide, and write a creative summary.",
+    agents: [
+      { name: "Router", icon: "🎯", role: "Query parser", color: "border-indigo-500/30 text-indigo-400 bg-indigo-500/5" },
+      { name: "Research", icon: "🔬", role: "Local vector search", color: "border-amber-500/30 text-amber-400 bg-amber-500/5" },
+      { name: "Planner", icon: "📋", role: "Curriculum structurer", color: "border-emerald-500/30 text-emerald-400 bg-emerald-500/5" },
+      { name: "Creative", icon: "🎨", role: "Markdown drafting", color: "border-pink-500/30 text-pink-400 bg-pink-500/5" }
+    ],
+    steps: [
+      "Router categorizes the research query and delegates to Research agent.",
+      "Research agent pulls facts from local indexed RAG databases.",
+      "Planner outlines the study guide and logical flow.",
+      "Creative agent drafts the final beautifully formatted markdown document."
+    ],
+    performanceMetric: "Inference Time: ~4.2s · High Token Output"
+  },
+  {
+    id: "full_burst",
+    title: "🚀 Full Orchestra Parallel Burst",
+    tagline: "All 7 Agents Collaborative Execution",
+    description: "Stress-test the system by activating all specialized agents concurrently. The Router delegates a massive unified prompt across the entire graph, demonstrating the system's true parallel async processing capabilities.",
+    prompt: "Trigger full orchestra",
+    agents: [
+      { name: "Router", icon: "🎯", role: "Parallel dispatcher", color: "border-indigo-500/30 text-indigo-400 bg-indigo-500/5" },
+      { name: "Action", icon: "⚡", role: "System execution", color: "border-rose-500/30 text-rose-400 bg-rose-500/5" },
+      { name: "Creative", icon: "🎨", role: "Content generation", color: "border-pink-500/30 text-pink-400 bg-pink-500/5" },
+      { name: "Memory", icon: "🧠", role: "Global state logger", color: "border-violet-500/30 text-violet-400 bg-violet-500/5" }
+    ],
+    steps: [
+      "Router intercepts the 'burst' command and unlocks parallel constraints.",
+      "Dispatches concurrent execution to Vision, Planner, Research, Action, and Creative agents.",
+      "Agent graph lights up as nodes process simultaneously via Web Workers.",
+      "Memory agent collects the massive payload and persists to disk."
+    ],
+    performanceMetric: "CPU Load: High · True Parallel Concurrent Execution"
+  },
+  {
+    id: "wasm_generator",
+    title: "💻 Wasm Plugin Auto-Generator",
+    tagline: "Planner + Action + Creative collaboration",
+    description: "Orchestra automatically scaffolds a new WebAssembly (Rust) plugin tailored to your prompt, writes the core logic, and registers the IPC hooks without needing a cloud compiler.",
+    prompt: "Generate a Wasm plugin to parse local log files and extract IP addresses.",
+    agents: [
+      { name: "Planner", icon: "📋", role: "Architecture design", color: "border-emerald-500/30 text-emerald-400 bg-emerald-500/5" },
+      { name: "Creative", icon: "🎨", role: "Rust code generation", color: "border-pink-500/30 text-pink-400 bg-pink-500/5" },
+      { name: "Action", icon: "⚡", role: "File scaffolding", color: "border-rose-500/30 text-rose-400 bg-rose-500/5" }
+    ],
+    steps: [
+      "Planner designs the Wasm module interface and Rust structs.",
+      "Creative generates the highly optimized Rust code using the local phi4-mini model.",
+      "Action writes the generated code to the src-tauri/plugins directory.",
+      "System alerts the user to run cargo build."
+    ],
+    performanceMetric: "Output: Rust/Wasm · Zero-dependency local generation"
+  },
+  {
+    id: "local_code_review",
+    title: "🔍 Privacy-First Code Reviewer",
+    tagline: "Research + Action + Memory collaboration",
+    description: "Safely perform deep architectural code reviews on your proprietary local repository without leaking any code to third-party cloud APIs.",
+    prompt: "Scan my current repository, identify any security vulnerabilities, and summarize the architecture.",
+    agents: [
+      { name: "Action", icon: "⚡", role: "Directory traversal", color: "border-rose-500/30 text-rose-400 bg-rose-500/5" },
+      { name: "Research", icon: "🔬", role: "Vulnerability analysis", color: "border-amber-500/30 text-amber-400 bg-amber-500/5" },
+      { name: "Memory", icon: "🧠", role: "Architecture mapping", color: "border-violet-500/30 text-violet-400 bg-violet-500/5" }
+    ],
+    steps: [
+      "Action agent recursively scans the target codebase via Tauri IPC.",
+      "Research agent analyzes the AST and flags potential unhandled promises or memory leaks.",
+      "Memory agent builds a graph of the repository structure for future queries."
+    ],
+    performanceMetric: "Scan Speed: ~300 files/sec · 100% Proprietary Code Safe"
   }
 ];
 
@@ -107,7 +184,7 @@ export function ShowcaseView() {
             key={wf.id}
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass rounded-2xl p-5 flex flex-col justify-between hover:border-white/10 transition-all duration-300 group"
+            className="glass premium-card rounded-2xl p-5 flex flex-col justify-between hover:border-white/10 transition-all duration-300 group"
           >
             {/* Title & Tagline */}
             <div>

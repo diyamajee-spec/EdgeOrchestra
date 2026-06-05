@@ -1,120 +1,80 @@
-# 🎯 EdgeOrchestra AI
+# 🌌 EdgeOrchestra AI
+### *The Ultimate Local-First Autonomous Agent Matrix*
+**Developed for the Win Elite Coders Open Source Hackathon**
 
-<div align="center">
+![EdgeOrchestra Banner](https://img.shields.io/badge/Status-Hackathon_Ready-06b6d4?style=for-the-badge) ![Offline First](https://img.shields.io/badge/Cloud_Free-100%25_Local-8b5cf6?style=for-the-badge)
 
-<h3>🎻 Your Personal AI Orchestra — 100% Local, Private & Multimodal 🎻</h3>
-
-[![GitHub License](https://img.shields.io/github/license/diyamajee-spec/EdgeOrchestra?style=for-the-badge&color=8b5cf6)](LICENSE)
-[![Platform Support](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-06b6d4?style=for-the-badge)](https://github.com/diyamajee-spec/EdgeOrchestra)
-[![Ollama Powered](https://img.shields.io/badge/Inference-Ollama%20Local-10b981?style=for-the-badge)](https://ollama.com)
-[![CRDT Sync](https://img.shields.io/badge/Sync-Loro%20CRDT-f59e0b?style=for-the-badge)](https://loro.dev)
-[![Wasm Plugins](https://img.shields.io/badge/Plugins-Wasm%20Sandbox-f43f5e?style=for-the-badge)](#wasm-plugins)
-
-<p align="center">
-  A local-first, privacy-preserving multi-agent desktop orchestra powered by Tauri 2 + React 19 + TypeScript + Ollama. EdgeOrchestra AI coordinates specialized offline models to execute complex multi-step workflows entirely on your own device.
-</p>
-
-[✨ Try a Showcase](#interactive-showcase) • [🚀 One-Command Install](#quick-start) • [🏗️ Architecture](#system-architecture) • [🧩 Wasm Plugins](#wasm-plugins)
-
-</div>
+EdgeOrchestra is a highly advanced, deeply technical **multi-agent AI orchestration platform** designed to run entirely on local hardware. By leveraging Ollama and native WebAssembly (Wasm) execution environments, EdgeOrchestra eliminates cloud dependency, ensuring 100% data privacy, zero latency limits, and full offline capability.
 
 ---
 
-## 📷 Screenshots
+## ⚡ Core Hackathon Features
 
-### 📊 Performance Dashboard & Visual Agent Flow
-*Capture real-time token metrics, latency, and collaborative execution graph.*
-![Performance Dashboard Placeholder](https://raw.githubusercontent.com/diyamajee-spec/EdgeOrchestra/main/docs/assets/dashboard_screenshot.png)
+### 1. 🧠 Autonomous Agent Swarm
+Watch as your requests are dynamically routed. The **Intent Matrix Analyzer** intercepts natural language, parses the request, and delegates tasks to a swarm of local specialist agents (Vision, Planner, Research, Action, Creative, Memory).
 
-### 💬 Multimodal Chat & Vision Handoffs
-*Capture frames directly via webcam and coordinate specialist agents.*
-![Multimodal Chat Placeholder](https://raw.githubusercontent.com/diyamajee-spec/EdgeOrchestra/main/docs/assets/chat_screenshot.png)
+### 2. 🚀 Full Orchestra Parallel Burst
+Push your local silicon to the absolute limit. EdgeOrchestra features a true parallel execution engine. By triggering the *Full Orchestra Burst Mode*, the router will spawn concurrent Web Workers to execute 5 specialist agents simultaneously. 
 
----
+### 3. 🎯 Interactive Data Graph
+The system architecture isn't hidden—it's interactive. Drag and drop local system files (like images) directly onto the ReactFlow Agent Graph nodes to instantly trigger deep offline vector analysis.
 
-## 🌟 Key Features
+### 4. 🎨 Cinematic Color Core Engine
+A fully custom CSS Variable Engine allows you to instantly swap the visual identity of the app. Toggle between the pristine **Cyan Core**, the heavily-contrasted **Matrix Green**, or the vibrant **Vaporwave**. 
 
-*   **100% On-Device & Offline**: No cloud APIs, no telemetry, and zero network data leaks. All inference is run locally via Ollama.
-*   **Multimodal Collaborators**: Captures live device sensors (e.g. webcam) to perform spatial and visual audits using `qwen2.5-vl`.
-*   **Visual Agent Graph**: React Flow coordinates a router agent (`phi4-mini`) which builds execution plans, delegating to specialized research, planning, action, and creative agents.
-*   **Persistent CRDT Memory**: Synchronized state and persistent history using the Loro CRDT framework, providing conflict-free replication across devices.
-*   **Wasm Plugin Sandbox**: Safely extend capabilities with sandboxed WebAssembly plugins written in Rust or AssemblyScript.
-*   **Performance Metrics Dashboard**: Real-time visualization of token speeds, inference latency, memory allocations, and agent collaboration steps.
-*   **Voice Input & Text-to-Speech**: Built-in voice transcription and offline speech synthesis readouts for complete hands-free interaction.
+### 5. 💻 Raw IPC Inspector (DevTools)
+Press `Ctrl + Shift + I` anywhere in the app to slide up the **DevTools Inspector Drawer**. Watch the raw IPC events, Memory hex allocations, and `Loro` CRDT sync logs fly by in real-time as the agents communicate. 
 
 ---
 
-## 🚀 Quick Start
+## 🛠️ Architecture Stack
 
-### One-Command Setup
+- **Frontend:** React, Tailwind CSS v4, Framer Motion (for buttery smooth cubic-bezier transitions).
+- **Desktop Runtime:** Tauri (Rust) for zero-copy file system access and OS-level operations.
+- **AI Inference Engine:** Ollama (Local LLM hosting).
+- **State & Memory:** Zustand + Loro (Conflict-free Replicated Data Types for P2P state sync).
+- **Graph Visualization:** ReactFlow / XYFlow.
 
-Get EdgeOrchestra AI up and running in seconds. The installer automatically downloads Ollama, pulls the primary models, validates system dependencies, and installs npm packages.
+---
 
-#### 🪟 Windows (PowerShell)
-```powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/diyamajee-spec/EdgeOrchestra/main/install.ps1'))
-```
-*(Or run `.\install.ps1` from the project directory).*
+## 🚀 Installation & Setup
 
-#### 🍎 macOS / 🐧 Linux (Bash)
-```bash
-curl -fsSL https://raw.githubusercontent.com/diyamajee-spec/EdgeOrchestra/main/setup.sh | bash
-```
-*(Or run `./setup.sh` from the project directory).*
+1. **Prerequisites:**
+   - Install [Node.js](https://nodejs.org/)
+   - Install [Rust & Cargo](https://www.rust-lang.org/tools/install)
+   - Install [Ollama](https://ollama.com/) (Required for local inference)
 
-### Manual Commands
-If you prefer running manual commands:
-1. Ensure Ollama is running and pull the models:
+2. **Clone & Install:**
+   ```bash
+   git clone https://github.com/diyamajee-spec/EdgeOrchestra.git
+   cd EdgeOrchestra
+   npm install
+   ```
+
+3. **Pull Local Models:**
+   Start Ollama in your terminal, then pull the required specialist models:
    ```bash
    ollama pull phi4-mini
-   ollama pull qwen2.5-vl
+   ollama pull qwen2.5-vl:7b
    ```
-2. Install dependencies & run:
+
+4. **Launch the Matrix:**
    ```bash
-   npm install
    npm run tauri dev
    ```
 
 ---
 
-## 🏗️ System Architecture
+## 🎮 How to Demo for Judges (WOW Factors)
 
-EdgeOrchestra AI uses a hub-and-spoke multi-agent coordination model. The Router agent (using `phi4-mini`) acts as the orchestrator, determining which specialist agents are needed to fulfill a request.
+During your presentation, make sure to execute these specific workflows to show off the platform's power:
 
-```mermaid
-sequenceDiagram
-    autonumber
-    User->>Router (phi4-mini): Submits query / captures image
-    Router (phi4-mini)->>Vision Agent (qwen2.5-vl): (If Image) Analyze spatial coordinates
-    Vision Agent (qwen2.5-vl)-->>Router (phi4-mini): Vision observations / OCR data
-    Router (phi4-mini)->>Planner Agent: Coordinates time blocks & task orders
-    Router (phi4-mini)->>Action / Wasm Agent: Triggers safe file ops or schedules meetings
-    Router (phi4-mini)->>Memory Agent (Loro CRDT): Syncs preferences/results to session DB
-    Router (phi4-mini)-->>User: Renders unified UI output + local voice synthesis readout
-```
-
-### Data Synchronization & Conflict Resolution (CRDT)
-Local state is modeled using **Loro CRDTs**. This ensures that if you run EdgeOrchestra AI on multiple devices (macOS/Windows), syncing data (like memory keys and configuration items) requires no centralized database. State changes can be exported as raw delta byte arrays and merged instantly and deterministically.
+1. **The Cinematic Boot:** Simply open the app. Let the judges watch the 4-second boot sequence, the Matrix code rain, and the hardware profiler HUD.
+2. **The IPC Inspector:** Press `Ctrl + Shift + I` to open the hidden terminal drawer and show them the real-time logs.
+3. **Trigger Parallel Execution:** Go to the *Showcase* tab and click **Launch Workflow** on the `Full Orchestra Parallel Burst` card. Watch the Chat UI open the Process Analyzer and hear the synthesized audio haptics!
+4. **Interactive Node Drop:** Go to the *Dashboard*, minimize the window slightly, and drag an image from your desktop directly onto the **Vision Node** to trigger an autonomous workflow.
 
 ---
 
-## 🧩 Wasm Plugins
-
-Custom capabilities can be built using our WebAssembly plugin templates:
-- **Calendar & Task Manager** (`plugins/calendar`): Extract dates, schedules, and priority workflows.
-- **Smart File Organizer** (`plugins/file_organizer`): Safely group files, scan download directories, and trigger space cleanups.
-- **Web Search Fallback** (`plugins/web_search`): Executes keyword fallback APIs when online results are explicitly requested.
-
-### Build and Load
-1. Write logic inside `src/lib.rs` (exposed functions: `process`, `get_info`, `alloc`, `dealloc`).
-2. Build to Wasm:
-   ```bash
-   cargo build --target wasm32-unknown-unknown --release
-   ```
-3. Load the output `.wasm` file using the **Plugin Manager** page in the application.
-
----
-
-## 📜 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### License
+MIT License. Built entirely offline. No cloud APIs were harmed in the making of this project.

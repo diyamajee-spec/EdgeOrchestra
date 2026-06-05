@@ -17,6 +17,7 @@ import {
   Image,
   Volume2,
   VolumeX,
+  Cpu,
 } from "lucide-react";
 import type { ChatMessage } from "@/types";
 
@@ -178,12 +179,17 @@ export function ChatView() {
 
         {isProcessing && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-2 text-sm text-white/30"
+            layout
+            initial={{ opacity: 0, y: 15, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="flex gap-3 w-full"
           >
-            <Loader2 size={14} className="animate-spin text-orchestra-400" />
-            <span>Agents are working…</span>
+            <div className="w-8 h-8 rounded-xl bg-[#020205] border border-cyan-500/30 flex items-center justify-center text-sm shrink-0 shadow-[0_0_10px_rgba(6,182,212,0.2)]">
+              <Sparkles size={14} className="text-cyan-400" />
+            </div>
+            <ProcessAnalyzer />
           </motion.div>
         )}
       </div>
@@ -305,10 +311,11 @@ function MessageBubble({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10, scale: 0.98 }}
+      layout
+      initial={{ opacity: 0, y: 15, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       className={cn("flex gap-3", isUser && "flex-row-reverse")}
     >
       {/* Avatar */}
@@ -344,6 +351,13 @@ function MessageBubble({
             : "bg-surface-2 text-white/75 rounded-tl-md border border-white/5"
         )}
       >
+        {message.attachments && message.attachments.length > 0 && (
+          <div className="mb-3 flex flex-wrap gap-2">
+            {message.attachments.map((attachment, i) => (
+              <img key={attachment.id || i} src={attachment.url} alt={attachment.name || "Attachment"} className="max-h-48 rounded-lg border border-white/10" />
+            ))}
+          </div>
+        )}
         <div className="whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{
           __html: formatMessage(message.content)
         }} />
@@ -442,9 +456,11 @@ function WebcamCapture({
   const [stream, setStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
+    let currentStream: MediaStream | null = null;
     navigator.mediaDevices
       .getUserMedia({ video: { width: 640, height: 480 } })
       .then((s) => {
+        currentStream = s;
         setStream(s);
         if (videoRef.current) {
           videoRef.current.srcObject = s;
@@ -453,7 +469,9 @@ function WebcamCapture({
       .catch(console.error);
 
     return () => {
-      stream?.getTracks().forEach((t) => t.stop());
+      if (currentStream) {
+        currentStream.getTracks().forEach((t) => t.stop());
+      }
     };
   }, []);
 
@@ -518,5 +536,98 @@ function WebcamCapture({
         </div>
       </motion.div>
     </motion.div>
+  );
+}
+
+// ── Process Analyzer (Mini Terminal in Chat) ──
+function ProcessAnalyzer() {
+  const [logs, setLogs] = useState<string[]>([]);
+  
+  useEffect(() => {
+    const steps = [
+      "ROUTER: Parsing natural language intent...",
+      "ROUTER: Identifying contextual targets...",
+      "ORCHESTRATOR: Constructing dependency graph...",
+      "WASM: Pre-warming isolated sandboxes...",
+      "DISPATCH: Handing over to specialist swarm..."
+    ];
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i < steps.length) {
+        // --- Synthesized Keyboard Click SFX ---
+        try {
+          const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+          if (AudioContext) {
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(800 + Math.random() * 200, ctx.currentTime);
+            gain.gain.setValueAtTime(0.05, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.05);
+          }
+        } catch (e) { /* ignore */ }
+
+        setLogs(prev => [...prev, steps[i]]);
+        i++;
+      }
+    }, 450);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="bg-[#020205] rounded-2xl rounded-tl-md border border-cyan-500/30 px-4 py-4 flex flex-col gap-2 w-full max-w-[85%] font-mono text-[10px] shadow-[0_0_20px_rgba(6,182,212,0.15)] relative overflow-hidden">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.05)_1px,transparent_1px)] bg-[size:10px_10px] pointer-events-none" />
+      
+      <div className="flex items-center justify-between mb-1 border-b border-cyan-500/20 pb-2 relative z-10">
+        <div className="flex items-center gap-2">
+          <Cpu size={14} className="text-cyan-400" />
+          <span className="text-cyan-400 font-bold tracking-[0.2em]">INTENT_MATRIX_ANALYZER</span>
+        </div>
+        {logs.length < 5 ? (
+          <div className="flex gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{animationDelay: "0ms"}} />
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{animationDelay: "150ms"}} />
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{animationDelay: "300ms"}} />
+          </div>
+        ) : (
+          <span className="text-emerald-400 font-bold">READY</span>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-1.5 text-cyan-500/80 relative z-10">
+        {logs.map((log, idx) => (
+          <motion.div 
+            key={idx} 
+            initial={{ opacity: 0, x: -10 }} 
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-start gap-2"
+          >
+            <span className="text-indigo-400 font-bold mt-0.5">{'>'}</span>
+            <span className={idx === 4 ? "text-cyan-300 font-bold" : ""}>{log}</span>
+          </motion.div>
+        ))}
+        {logs.length < 5 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ repeat: Infinity, duration: 0.6 }}
+            className="w-2.5 h-3.5 bg-cyan-400 mt-1 shadow-[0_0_8px_rgba(6,182,212,0.8)]"
+          />
+        )}
+      </div>
+      
+      {/* Laser sweep effect inside the bubble */}
+      <motion.div 
+        className="absolute top-0 bottom-0 w-[1px] bg-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,1)] pointer-events-none z-0"
+        initial={{ left: "-10%" }}
+        animate={{ left: "110%" }}
+        transition={{ duration: 1.5, ease: "linear", repeat: Infinity }}
+      />
+    </div>
   );
 }

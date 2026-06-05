@@ -11,7 +11,7 @@ const anim = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
 const stagger = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.06 } } };
 
 export function DashboardView() {
-  const { agents, ollamaConnected, ollamaModels, messages, memories, checkOllama, metrics } = useOrchestraStore();
+  const { agents, ollamaConnected, ollamaModels, messages, memories, checkOllama, metrics, sendMessage, isProcessing } = useOrchestraStore();
 
   useEffect(() => { checkOllama(); const i = setInterval(checkOllama, 15000); return () => clearInterval(i); }, [checkOllama]);
 
@@ -29,11 +29,24 @@ export function DashboardView() {
 
       {/* Graph + Cards */}
       <motion.div variants={stagger} initial="hidden" animate="show" className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-        <motion.div variants={anim} className="xl:col-span-3 glass rounded-2xl p-4">
-          <div className="flex items-center gap-2 mb-3"><TrendingUp size={16} className="text-orchestra-400"/><h3 className="text-sm font-semibold text-white/70">Agent Orchestra</h3></div>
+        <motion.div variants={anim} className="xl:col-span-3 glass premium-card rounded-2xl p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <TrendingUp size={16} className="text-orchestra-400"/>
+              <h3 className="text-sm font-semibold text-white/70">Agent Orchestra</h3>
+            </div>
+            <button 
+              onClick={() => sendMessage("Analyze my desk via webcam and create a productivity plan")}
+              disabled={isProcessing}
+              className="px-3 py-1 rounded-lg text-xs font-semibold bg-orchestra-500/20 text-orchestra-300 hover:bg-orchestra-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+            >
+              {isProcessing ? <Activity size={12} className="animate-pulse" /> : <Zap size={12} />}
+              {isProcessing ? "Simulating..." : "Run Demo Flow"}
+            </button>
+          </div>
           <div className="h-[400px]"><AgentGraph/></div>
         </motion.div>
-        <motion.div variants={anim} className="xl:col-span-2 space-y-3">
+        <motion.div variants={anim} className="xl:col-span-2 space-y-3 glass premium-card rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-1"><Zap size={16} className="text-accent-amber"/><h3 className="text-sm font-semibold text-white/70">Agent Status</h3></div>
           <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
             {(Object.keys(agents) as AgentId[]).map(id => <AgentCard key={id} agent={agents[id]} compact/>)}
@@ -43,13 +56,13 @@ export function DashboardView() {
 
       {/* System Row */}
       <motion.div variants={stagger} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <motion.div variants={anim} className="glass rounded-2xl p-4">
+        <motion.div variants={anim} className="glass premium-card rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-3"><Cpu size={16} className="text-accent-cyan"/><h3 className="text-sm font-semibold text-white/70">System</h3></div>
           <Bar label="CPU" value={metrics.cpuUsage} color="#06b6d4"/>
           <Bar label="Memory" value={metrics.memoryUsage} color="#8b5cf6"/>
           <Bar label="GPU" value={metrics.gpuUsage||0} color="#10b981"/>
         </motion.div>
-        <motion.div variants={anim} className="glass rounded-2xl p-4">
+        <motion.div variants={anim} className="glass premium-card rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-3"><HardDrive size={16} className="text-accent-amber"/><h3 className="text-sm font-semibold text-white/70">Models</h3></div>
           {ollamaModels.length>0 ? ollamaModels.slice(0,5).map(m=>(
             <div key={m.name} className="flex justify-between px-3 py-2 rounded-lg bg-surface-2/50 text-xs mb-1">
@@ -58,7 +71,7 @@ export function DashboardView() {
             </div>
           )) : <p className="text-xs text-white/25 py-4 text-center">{ollamaConnected?"No models. Pull: ollama pull phi4-mini":"Start Ollama"}</p>}
         </motion.div>
-        <motion.div variants={anim} className="glass rounded-2xl p-4">
+        <motion.div variants={anim} className="glass premium-card rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-3"><TrendingUp size={16} className="text-accent-violet"/><h3 className="text-sm font-semibold text-white/70">Performance</h3></div>
           <div className="space-y-2.5">
             <div className="flex justify-between items-center text-xs">
@@ -79,7 +92,7 @@ export function DashboardView() {
             </div>
           </div>
         </motion.div>
-        <motion.div variants={anim} className="glass rounded-2xl p-4">
+        <motion.div variants={anim} className="glass premium-card rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-3"><Shield size={16} className="text-accent-emerald"/><h3 className="text-sm font-semibold text-white/70">Privacy</h3></div>
           {[["Processing","100% Local"],["Storage","On-device"],["Network","Offline"],["Sync","CRDT"],["Telemetry","None"]].map(([l,v])=>(
             <div key={l} className="flex justify-between px-3 py-1.5 text-xs"><span className="text-white/40">{l}</span><span className="text-accent-emerald/70">{v}</span></div>
@@ -91,7 +104,7 @@ export function DashboardView() {
 }
 
 function Stat({icon,label,value,sub}:{icon:React.ReactNode;label:string;value:string;sub:string}) {
-  return <motion.div variants={anim} className="glass rounded-2xl p-4"><div className="flex items-start justify-between"><div><p className="text-xs text-white/35 mb-1">{label}</p><p className="text-2xl font-bold text-white/90">{value}</p><p className="text-[10px] text-white/25 mt-0.5">{sub}</p></div><div className="p-2 rounded-xl bg-white/5">{icon}</div></div></motion.div>;
+  return <motion.div variants={anim} className="glass premium-card rounded-2xl p-4"><div className="flex items-start justify-between"><div><p className="text-xs text-white/35 mb-1">{label}</p><p className="text-2xl font-bold text-white/90">{value}</p><p className="text-[10px] text-white/25 mt-0.5">{sub}</p></div><div className="p-2 rounded-xl bg-white/5">{icon}</div></div></motion.div>;
 }
 
 function Bar({label,value,color}:{label:string;value:number;color:string}) {

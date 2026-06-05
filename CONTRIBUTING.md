@@ -60,3 +60,21 @@ To create a new plugin:
 - **TypeScript / React 19**: Strictly typed components, utilizing global states in `src/store/orchestra.ts`.
 - **Rust / Tauri 2**: Clean code adhering to `cargo clippy` and `cargo fmt`.
 - **CSS / Styling**: Tailwind CSS v4 layout styling with modern glassmorphism components defined in `src/index.css`.
+
+---
+
+## Troubleshooting & Common Pitfalls
+
+### What to do if Ollama fails to pull the model?
+If `ollama pull phi4-mini` hangs or fails:
+- Check your internet connection.
+- Ensure the Ollama background service is running (`systemctl status ollama` on Linux, or check the taskbar on Windows/macOS).
+- Try restarting the Ollama service and re-running the pull command.
+
+### How to fix Rust `wasm32-unknown-unknown` target errors?
+If you see errors compiling Wasm plugins:
+- Make sure you added the target: `rustup target add wasm32-unknown-unknown`
+- Ensure your Rust toolchain is up to date: `rustup update`
+
+### Tests failing or not running?
+Make sure you have run `npm install` to get `vitest` and testing libraries. Run tests using `npm run test`.

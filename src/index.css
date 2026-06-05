@@ -38,6 +38,9 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 400ms;
 }
 
 html {
@@ -140,14 +143,24 @@ body {
   background-clip: text;
 }
 
-/* ──────── Grid Background ──────── */
+/* ──────── Grid & Mesh Background ──────── */
 .grid-bg {
-  background-image: radial-gradient(
-      circle at 1px 1px,
-      rgba(99, 102, 241, 0.06) 1px,
-      transparent 0
-    );
-  background-size: 32px 32px;
+  position: relative;
+  background-color: var(--color-surface-0);
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(99, 102, 241, 0.08) 1px, transparent 0),
+    radial-gradient(circle at top left, rgba(99, 102, 241, 0.03), transparent 40%),
+    radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.03), transparent 40%);
+  background-size: 32px 32px, 100% 100%, 100% 100%;
+}
+
+.premium-card {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.premium-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.3);
 }
 
 /* ──────── Agent Status Indicators ──────── */
@@ -219,3 +232,86 @@ body {
   from { transform: rotate(0deg) translateX(80px) rotate(0deg); }
   to { transform: rotate(360deg) translateX(80px) rotate(-360deg); }
 }
+
+@keyframes typing-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-4px); opacity: 1; }
+}
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  background-color: currentColor;
+  border-radius: 50%;
+  display: inline-block;
+  animation: typing-bounce 1.4s infinite ease-in-out both;
+}
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+/* ──────── Light Mode Overrides ──────── */
+html.light {
+  --color-surface-0: #f8fafc;
+  --color-surface-1: #f1f5f9;
+  --color-surface-2: #e2e8f0;
+  --color-surface-3: #cbd5e1;
+  --color-surface-4: #94a3b8;
+  color: #0f172a;
+}
+html.light body {
+  background: var(--color-surface-0);
+  color: #0f172a;
+}
+html.light .glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.5) 100%);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+}
+html.light .glass-strong {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.75) 100%);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.05);
+}
+html.light .premium-card:hover {
+  box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.15), 0 10px 20px -5px rgba(0, 0, 0, 0.05);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+html.light .grid-bg {
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(15, 23, 42, 0.06) 1px, transparent 0),
+    radial-gradient(circle at top left, rgba(99, 102, 241, 0.12), transparent 40%),
+    radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.12), transparent 40%);
+}
+html.light .text-white\/90 { color: rgba(15, 23, 42, 0.90); }
+html.light .text-white\/85 { color: rgba(15, 23, 42, 0.85); }
+html.light .text-white\/70 { color: rgba(15, 23, 42, 0.70); }
+html.light .text-white\/60 { color: rgba(15, 23, 42, 0.60); }
+html.light .text-white\/50 { color: rgba(15, 23, 42, 0.50); }
+html.light .text-white\/40 { color: rgba(15, 23, 42, 0.40); }
+html.light .text-white\/35 { color: rgba(15, 23, 42, 0.35); }
+html.light .text-white\/30 { color: rgba(15, 23, 42, 0.30); }
+html.light .text-white\/25 { color: rgba(15, 23, 42, 0.25); }
+
+/* ──────── Dynamic Themes ──────── */
+body.theme-matrix {
+  filter: hue-rotate(85deg) contrast(1.1);
+}
+body.theme-matrix img, 
+body.theme-matrix video {
+  filter: hue-rotate(-85deg) contrast(0.9); /* Revert images back */
+}
+
+body.theme-vaporwave {
+  filter: hue-rotate(240deg) saturate(1.5);
+}
+body.theme-vaporwave img, 
+body.theme-vaporwave video {
+  filter: saturate(0.66) hue-rotate(-240deg);
+}
+html.light .text-white\/20 { color: rgba(15, 23, 42, 0.20); }
+html.light .text-white\/15 { color: rgba(15, 23, 42, 0.15); }
+html.light .text-white\/10 { color: rgba(15, 23, 42, 0.10); }
+html.light .bg-white\/5 { background-color: rgba(15, 23, 42, 0.05); }
+html.light .bg-white\/10 { background-color: rgba(15, 23, 42, 0.10); }
+html.light .bg-white\/20 { background-color: rgba(15, 23, 42, 0.20); }
+html.light .border-white\/5 { border-color: rgba(15, 23, 42, 0.1); }
+html.light .border-white\/10 { border-color: rgba(15, 23, 42, 0.15); }

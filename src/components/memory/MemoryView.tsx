@@ -35,40 +35,54 @@ export function MemoryView() {
       </div>
 
       {/* Memory Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        <AnimatePresence>
-          {memories.map(mem=>(
-            <motion.div key={mem.id} layout initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}} exit={{opacity:0,scale:0.9}} className="glass rounded-2xl p-4 group">
-              {/* Header */}
-              <div className="flex items-start justify-between mb-2">
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase" style={{background:`${TYPE_COLORS[mem.type]||'#666'}20`,color:TYPE_COLORS[mem.type]||'#999'}}>{mem.type}</span>
-                <button onClick={()=>removeMemory(mem.id)} className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-accent-rose/10 text-white/20 hover:text-accent-rose transition-all"><Trash2 size={12}/></button>
-              </div>
-              {/* Content */}
-              <p className="text-sm text-white/70 mb-3">{mem.content}</p>
-              {/* Tags */}
-              {mem.tags.length>0 && (
-                <div className="flex flex-wrap gap-1 mb-2">
-                  {mem.tags.map(t=><span key={t} className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-white/5 text-white/30"><Tag size={8}/>{t}</span>)}
+      {memories.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-[50vh] text-center">
+          <div className="relative">
+            <div className="absolute inset-0 bg-accent-violet/20 blur-xl rounded-full" />
+            <Brain size={48} className="text-accent-violet/50 relative mb-4 animate-bounce" />
+          </div>
+          <h3 className="text-xl font-bold text-white/90 mb-2">Your Orchestra is quiet...</h3>
+          <p className="text-white/40 max-w-sm mb-6">Start a conversation in the Chat to let the Memory agent capture context, facts, and your preferences via CRDT sync.</p>
+          <button className="px-6 py-2.5 rounded-full bg-accent-violet/20 text-accent-violet font-semibold hover:bg-accent-violet/30 transition-colors shadow-lg shadow-accent-violet/10 flex items-center gap-2">
+            <Plus size={18} /> New Memory
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          <AnimatePresence>
+            {memories.map(mem=>(
+              <motion.div key={mem.id} layout initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}} exit={{opacity:0,scale:0.9}} className="glass rounded-2xl p-4 group">
+                {/* Header */}
+                <div className="flex items-start justify-between mb-2">
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase" style={{background:`${TYPE_COLORS[mem.type]||'#666'}20`,color:TYPE_COLORS[mem.type]||'#999'}}>{mem.type}</span>
+                  <button onClick={()=>removeMemory(mem.id)} className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-accent-rose/10 text-white/20 hover:text-accent-rose transition-all"><Trash2 size={12}/></button>
                 </div>
-              )}
-              {/* Footer */}
-              <div className="flex items-center justify-between text-[10px] text-white/20">
-                <span className="flex items-center gap-1" style={{color:AGENT_COLORS[mem.source]||'#666'}}>via {mem.source}</span>
-                <span>{timeAgo(mem.createdAt)}</span>
-              </div>
-              {/* Importance */}
-              <div className="mt-2 h-1 rounded-full bg-surface-3 overflow-hidden">
-                <div className="h-full rounded-full bg-accent-violet/50" style={{width:`${mem.importance*100}%`}}/>
-              </div>
-              {/* Connections */}
-              {mem.connections.length>0 && (
-                <div className="flex items-center gap-1 mt-2 text-[10px] text-white/15"><Link size={10}/>{mem.connections.length} connections</div>
-              )}
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
+                {/* Content */}
+                <p className="text-sm text-white/70 mb-3">{mem.content}</p>
+                {/* Tags */}
+                {mem.tags.length>0 && (
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {mem.tags.map(t=><span key={t} className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-white/5 text-white/30"><Tag size={8}/>{t}</span>)}
+                  </div>
+                )}
+                {/* Footer */}
+                <div className="flex items-center justify-between text-[10px] text-white/20">
+                  <span className="flex items-center gap-1" style={{color:AGENT_COLORS[mem.source]||'#666'}}>via {mem.source}</span>
+                  <span>{timeAgo(mem.createdAt)}</span>
+                </div>
+                {/* Importance */}
+                <div className="mt-2 h-1 rounded-full bg-surface-3 overflow-hidden">
+                  <div className="h-full rounded-full bg-accent-violet/50" style={{width:`${mem.importance*100}%`}}/>
+                </div>
+                {/* Connections */}
+                {mem.connections.length>0 && (
+                  <div className="flex items-center gap-1 mt-2 text-[10px] text-white/15"><Link size={10}/>{mem.connections.length} connections</div>
+                )}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
     </div>
   );
 }
