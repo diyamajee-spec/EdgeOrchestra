@@ -48,8 +48,35 @@ Experience a 4-second cinematic system boot sequence featuring a Matrix code-rai
 
 ## 🏗️ Technical Architecture
 
-EdgeOrchestra is built on a modern, high-performance tech stack engineered for offline superiority:
+```mermaid
+graph TD
+    User([User Prompt / File Drop]) --> Router{Intent Router}
+    
+    subgraph "EdgeOrchestra Local Multi-Agent Swarm"
+        Router -->|Visual Context| Vision[👁️ Vision Agent]
+        Router -->|General Queries| Planner[📋 Planner Agent]
+        Router -->|Deep Data| Research[🔬 Research Agent]
+        Router -->|System IO| Action[⚡ Action Agent]
+        Router -->|Generative| Creative[🎨 Creative Agent]
+    end
+    
+    Vision --> Memory[(🧠 Memory CRDT)]
+    Planner --> Memory
+    Research --> Memory
+    Action --> Memory
+    Creative --> Memory
+    
+    subgraph "Core Runtime (Zero Cloud)"
+        Ollama((Ollama Local LLMs)) -.-> Vision
+        Ollama -.-> Planner
+        Ollama -.-> Research
+        Tauri[[Tauri Rust OS Layer]] -.-> Action
+    end
+```
 
+### Stack Matrix
+
+EdgeOrchestra is built on a modern, high-performance tech stack engineered for offline superiority:
 | Layer | Technology | Purpose |
 |-------|------------|---------|
 | **Frontend Framework** | React + TypeScript | Robust, type-safe component architecture. |
