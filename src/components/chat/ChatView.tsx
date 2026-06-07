@@ -134,7 +134,40 @@ export function ChatView() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full relative">
+      <AnimatePresence>
+        {isListening && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="absolute inset-0 bg-surface-0/75 backdrop-blur-md z-40 flex flex-col items-center justify-center gap-6"
+          >
+            <div className="relative w-44 h-44 flex items-center justify-center">
+              {/* Glowing blurred background blobs */}
+              <div className="absolute w-36 h-36 bg-accent-cyan/30 rounded-full blur-2xl animate-siri-blob" />
+              <div className="absolute w-32 h-32 bg-accent-violet/25 rounded-full blur-2xl animate-siri-blob" style={{ animationDelay: "-2s" }} />
+              <div className="absolute w-40 h-40 bg-orchestra-500/20 rounded-full blur-2xl animate-siri-blob" style={{ animationDelay: "-4s" }} />
+              
+              {/* Rotating gradient audio orb */}
+              <motion.div 
+                className="w-28 h-28 rounded-full bg-gradient-to-tr from-accent-cyan via-accent-violet to-orchestra-500 animate-siri-blob animate-siri-rotate border border-white/10 shadow-[0_0_40px_rgba(6,182,212,0.4)] relative z-10 flex items-center justify-center cursor-pointer"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={toggleListening}
+              >
+                <Mic size={32} className="text-white animate-pulse" />
+              </motion.div>
+            </div>
+            <div className="text-center z-10 space-y-1">
+              <h3 className="text-sm font-bold text-white/90 tracking-[0.25em]">LISTENING...</h3>
+              <p className="text-xs text-white/40">Speak your prompt, then click the orb to submit</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Chat Header */}
       <div className="flex items-center justify-between px-6 py-3 border-b border-white/5">
         <div className="flex items-center gap-3">

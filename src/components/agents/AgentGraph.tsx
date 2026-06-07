@@ -15,12 +15,75 @@ import {
   Position,
   useNodesState,
   useEdgesState,
+  BaseEdge,
+  getBezierPath,
+  type EdgeProps,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { motion } from "framer-motion";
 import { useOrchestraStore, type OrchestraStore } from "@/store/orchestra";
 import type { AgentConfig } from "@/agents/config";
 import { cn } from "@/lib/utils";
+
+// ── Custom Glowing Edge Component ──
+function GlowingEdge({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition,
+  targetPosition,
+  style = {},
+  markerEnd,
+  animated,
+}: EdgeProps) {
+  const [edgePath] = getBezierPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetPosition,
+    targetX,
+    targetY,
+  });
+
+  return (
+    <>
+      {/* Underlying thick glow path */}
+      {animated && (
+        <path
+          id={`${id}-glow`}
+          className="react-flow__edge-path opacity-25 blur-[2.5px] transition-all duration-350"
+          d={edgePath}
+          style={{
+            ...style,
+            strokeWidth: (style.strokeWidth as number || 2) + 5,
+          }}
+        />
+      )}
+      {/* Base edge path */}
+      <BaseEdge id={id} path={edgePath} markerEnd={markerEnd} style={style} />
+      {/* Flying pulse dot along path */}
+      {animated && (
+        <path
+          className="react-flow__edge-path animate-dash-pulse transition-all duration-350"
+          d={edgePath}
+          style={{
+            ...style,
+            strokeDasharray: "8 24",
+            strokeDashoffset: 0,
+            strokeWidth: (style.strokeWidth as number || 2) + 0.5,
+            stroke: style.stroke === "rgba(99, 102, 241, 0.15)" ? "#818cf8" : style.stroke,
+          }}
+        />
+      )}
+    </>
+  );
+}
+
+const edgeTypes = {
+  glowing: GlowingEdge as unknown as React.ComponentType<any>,
+};
 
 // ── Custom Agent Node ──
 function AgentFlowNode({ data }: { data: AgentConfig & { messageCount: number } }) {
@@ -166,6 +229,7 @@ export function AgentGraph() {
       id: `router-${agent.id}`,
       source: "router",
       target: agent.id,
+      type: "glowing",
       animated: agent.status === "active" || agent.status === "thinking",
       style: {
         stroke:
@@ -174,7 +238,7 @@ export function AgentGraph() {
             : agent.status === "thinking"
             ? "#f59e0b"
             : "rgba(99, 102, 241, 0.15)",
-        strokeWidth: agent.status !== "idle" ? 2 : 1,
+        strokeWidth: agent.status !== "idle" ? 2.5 : 1.2,
       },
     }));
   }, [agents]);
@@ -198,6 +262,7 @@ export function AgentGraph() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         onInit={onInit}
         fitView
         proOptions={{ hideAttribution: true }}
