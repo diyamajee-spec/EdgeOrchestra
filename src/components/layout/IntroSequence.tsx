@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Cpu } from "lucide-react";
+import { playBootSound } from "@/lib/audio";
 
 const BOOT_STEPS = [
   "KERNEL_INIT: EdgeOrchestra v0.1.0-nightly (aarch64/x86_64)",
@@ -18,6 +19,7 @@ export function IntroSequence() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    playBootSound();
     // --- Matrix Code Rain Effect ---
     const canvas = canvasRef.current;
     if (!canvas) return;

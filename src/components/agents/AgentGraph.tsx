@@ -47,6 +47,8 @@ function GlowingEdge({
     targetY,
   });
 
+  const activeStroke = style.stroke === "rgba(99, 102, 241, 0.15)" ? "#818cf8" : style.stroke;
+
   return (
     <>
       {/* Underlying thick glow path */}
@@ -73,9 +75,23 @@ function GlowingEdge({
             strokeDasharray: "8 24",
             strokeDashoffset: 0,
             strokeWidth: (style.strokeWidth as number || 2) + 0.5,
-            stroke: style.stroke === "rgba(99, 102, 241, 0.15)" ? "#818cf8" : style.stroke,
+            stroke: activeStroke,
           }}
         />
+      )}
+      {/* Flying Sparks (Stream of GPU-animated light particles) */}
+      {animated && (
+        <>
+          <circle r="3" fill={activeStroke} style={{ filter: `drop-shadow(0px 0px 4px ${activeStroke})` }}>
+            <animateMotion dur="1.6s" repeatCount="indefinite" path={edgePath} />
+          </circle>
+          <circle r="2.2" fill={activeStroke} style={{ filter: `drop-shadow(0px 0px 3px ${activeStroke})` }}>
+            <animateMotion dur="1.6s" begin="0.5s" repeatCount="indefinite" path={edgePath} />
+          </circle>
+          <circle r="1.5" fill={activeStroke} style={{ filter: `drop-shadow(0px 0px 2px ${activeStroke})` }}>
+            <animateMotion dur="1.6s" begin="1.0s" repeatCount="indefinite" path={edgePath} />
+          </circle>
+        </>
       )}
     </>
   );

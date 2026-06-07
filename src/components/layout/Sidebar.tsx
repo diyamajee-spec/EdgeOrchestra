@@ -1,10 +1,7 @@
-/* ──────────────────────────────────────────────────────────
-   Sidebar Navigation Component
-   ────────────────────────────────────────────────────────── */
-
 import { motion, AnimatePresence } from "framer-motion";
 import { useOrchestraStore } from "@/store/orchestra";
 import { cn } from "@/lib/utils";
+import { playClickSound } from "@/lib/audio";
 import {
   LayoutDashboard,
   MessageSquare,
@@ -79,7 +76,10 @@ export function Sidebar() {
             <button
               key={item.id}
               id={`nav-${item.id}`}
-              onClick={() => setActiveView(item.id)}
+              onClick={() => {
+                playClickSound();
+                setActiveView(item.id);
+              }}
               className={cn(
                 "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
                 isActive
@@ -161,7 +161,10 @@ export function Sidebar() {
         {/* Toggle */}
         <button
           id="sidebar-toggle"
-          onClick={toggleSidebar}
+          onClick={() => {
+            playClickSound();
+            toggleSidebar();
+          }}
           className="w-full flex items-center justify-center py-2 rounded-lg hover:bg-white/5 text-white/30 hover:text-white/60 transition-colors"
         >
           {sidebarOpen ? (

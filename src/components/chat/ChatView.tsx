@@ -20,6 +20,7 @@ import {
   Cpu,
 } from "lucide-react";
 import type { ChatMessage } from "@/types";
+import { playClickSound, playSuccessSound, playKeyboardClick } from "@/lib/audio";
 
 export function ChatView() {
   const {
@@ -39,6 +40,7 @@ export function ChatView() {
   const recognitionRef = useRef<any>(null);
 
   const toggleListening = () => {
+    playClickSound();
     if (isListening) {
       recognitionRef.current?.stop();
       setIsListening(false);
@@ -120,6 +122,7 @@ export function ChatView() {
   const handleSend = async () => {
     const trimmed = input.trim();
     if (!trimmed && !capturedImage) return;
+    playClickSound();
     setInput("");
     const img = capturedImage;
     setCapturedImage(null);
@@ -181,7 +184,10 @@ export function ChatView() {
         </div>
         <button
           id="clear-chat"
-          onClick={clearMessages}
+          onClick={() => {
+            playClickSound();
+            clearMessages();
+          }}
           className="p-2 rounded-lg hover:bg-white/5 text-white/25 hover:text-accent-rose/70 transition-colors"
         >
           <Trash2 size={14} />
@@ -200,12 +206,13 @@ export function ChatView() {
         )}
 
         <AnimatePresence initial={false}>
-          {messages.map((msg) => (
+          {messages.map((msg, idx) => (
             <MessageBubble
               key={msg.id}
               message={msg}
               onSpeak={speak}
               speakingId={speakingId}
+              isLast={idx === messages.length - 1}
             />
           ))}
         </AnimatePresence>
@@ -329,18 +336,71 @@ export function ChatView() {
   );
 }
 
+// ── Typewriter Text Component with Audio Typing clicks ──
+function TypewriterText({ content, isNew }: { content: string; isNew: boolean }) {
+  const [displayedText, setDisplayedText] = useState("");
+  const indexRef = useRef(0);
+
+  useEffect(() => {
+    if (!isNew) {
+      setDisplayedText(content);
+      return;
+    }
+
+    setDisplayedText("");
+    indexRef.current = 0;
+    
+    // Play arpeggiated success chime once when agent starts outputting
+    playSuccessSound();
+
+    let timer: NodeJS.Timeout;
+    const type = () => {
+      if (indexRef.current < content.length) {
+        // Type 1-3 characters at a time for natural feel
+        const charsToTake = Math.min(Math.ceil(Math.random() * 2), content.length - indexRef.current);
+        const nextChunk = content.substring(0, indexRef.current + charsToTake);
+        setDisplayedText(nextChunk);
+        indexRef.current += charsToTake;
+        
+        playKeyboardClick();
+        
+        timer = setTimeout(type, 12 + Math.random() * 20);
+      } else {
+        setDisplayedText(content);
+      }
+    };
+
+    type();
+    return () => clearTimeout(timer);
+  }, [content, isNew]);
+
+  return (
+    <div className="relative">
+      <div className="whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{
+        __html: formatMessage(displayedText)
+      }} />
+      {isNew && indexRef.current < content.length && (
+        <span className="inline-block w-2 h-3.5 bg-orchestra-400 ml-1 animate-pulse" />
+      )}
+    </div>
+  );
+}
+
 // ── Message Bubble ──
 function MessageBubble({
   message,
   onSpeak,
   speakingId,
+  isLast,
 }: {
   message: ChatMessage;
   onSpeak: (id: string, text: string) => void;
   speakingId: string | null;
+  isLast: boolean;
 }) {
   const isUser = message.role === "user";
   const isAgent = message.role === "agent";
+  const isNew = isAgent && isLast && (Date.now() - message.timestamp) < 6000;
 
   return (
     <motion.div
@@ -391,9 +451,7 @@ function MessageBubble({
             ))}
           </div>
         )}
-        <div className="whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{
-          __html: formatMessage(message.content)
-        }} />
+        <TypewriterText content={message.content} isNew={isNew} />
         <div className="text-[10px] text-white/20 mt-2 font-mono flex items-center justify-between">
           <div>
             {timeAgo(message.timestamp)}
@@ -587,23 +645,7 @@ function ProcessAnalyzer() {
     let i = 0;
     const interval = setInterval(() => {
       if (i < steps.length) {
-        // --- Synthesized Keyboard Click SFX ---
-        try {
-          const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-          if (AudioContext) {
-            const ctx = new AudioContext();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = "sine";
-            osc.frequency.setValueAtTime(800 + Math.random() * 200, ctx.currentTime);
-            gain.gain.setValueAtTime(0.05, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start();
-            osc.stop(ctx.currentTime + 0.05);
-          }
-        } catch (e) { /* ignore */ }
+        playKeyboardClick();
 
         setLogs(prev => [...prev, steps[i]]);
         i++;

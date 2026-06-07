@@ -284,6 +284,17 @@ body {
   animation: siri-rotate 12s linear infinite;
 }
 
+/* ──────── Gauges & Visuals ──────── */
+.glow-gauge {
+  filter: drop-shadow(0 0 8px var(--gauge-glow, rgba(99, 102, 241, 0.4)));
+}
+.graph-canvas {
+  cursor: grab;
+}
+.graph-canvas:active {
+  cursor: grabbing;
+}
+
 /* ──────── Light Mode Overrides ──────── */
 html.light {
   --color-surface-0: #f8fafc;

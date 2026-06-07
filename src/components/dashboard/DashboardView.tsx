@@ -57,10 +57,12 @@ export function DashboardView() {
       {/* System Row */}
       <motion.div variants={stagger} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <motion.div variants={anim} className="glass premium-card rounded-2xl p-4">
-          <div className="flex items-center gap-2 mb-3"><Cpu size={16} className="text-accent-cyan"/><h3 className="text-sm font-semibold text-white/70">System</h3></div>
-          <Bar label="CPU" value={metrics.cpuUsage} color="#06b6d4" glowColor="rgba(6, 182, 212, 0.4)"/>
-          <Bar label="Memory" value={metrics.memoryUsage} color="#8b5cf6" glowColor="rgba(139, 92, 246, 0.4)"/>
-          <Bar label="GPU" value={metrics.gpuUsage||0} color="#10b981" glowColor="rgba(16, 185, 129, 0.4)"/>
+          <div className="flex items-center gap-2 mb-3"><Cpu size={16} className="text-accent-cyan"/><h3 className="text-sm font-semibold text-white/70">System Monitor</h3></div>
+          <div className="grid grid-cols-3 gap-1 pt-1">
+            <CircularGauge label="CPU" value={metrics.cpuUsage} color="#06b6d4" glowColor="rgba(6, 182, 212, 0.45)" />
+            <CircularGauge label="RAM" value={metrics.memoryUsage} color="#8b5cf6" glowColor="rgba(139, 92, 246, 0.45)" />
+            <CircularGauge label="GPU" value={metrics.gpuUsage||0} color="#10b981" glowColor="rgba(16, 185, 129, 0.45)" />
+          </div>
         </motion.div>
         <motion.div variants={anim} className="glass premium-card rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-3"><HardDrive size={16} className="text-accent-amber"/><h3 className="text-sm font-semibold text-white/70">Models</h3></div>
@@ -107,28 +109,44 @@ function Stat({icon,label,value,sub}:{icon:React.ReactNode;label:string;value:st
   return <motion.div variants={anim} className="glass premium-card rounded-2xl p-4"><div className="flex items-start justify-between"><div><p className="text-xs text-white/35 mb-1">{label}</p><p className="text-2xl font-bold text-white/90">{value}</p><p className="text-[10px] text-white/25 mt-0.5">{sub}</p></div><div className="p-2 rounded-xl bg-white/5">{icon}</div></div></motion.div>;
 }
 
-function Bar({label,value,color,glowColor}:{label:string;value:number;color:string;glowColor:string}) {
+function CircularGauge({ label, value, color, glowColor }: { label: string; value: number; color: string; glowColor: string }) {
+  const radius = 22;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (value / 100) * circumference;
+
   return (
-    <div className="mb-3">
-      <div className="flex justify-between mb-1">
-        <span className="text-xs text-white/40">{label}</span>
-        <span className="text-xs font-mono text-white/30">{value}%</span>
+    <div className="flex flex-col items-center justify-center">
+      <div className="relative w-16 h-16 flex items-center justify-center">
+        {/* Track circle */}
+        <svg className="w-full h-full transform -rotate-90">
+          <circle
+            cx="32"
+            cy="32"
+            r={radius}
+            className="stroke-surface-3/30"
+            strokeWidth="4"
+            fill="transparent"
+          />
+          {/* Glowing Progress circle */}
+          <motion.circle
+            cx="32"
+            cy="32"
+            r={radius}
+            stroke={color}
+            strokeWidth="4"
+            strokeDasharray={circumference}
+            initial={{ strokeDashoffset: circumference }}
+            animate={{ strokeDashoffset }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            strokeLinecap="round"
+            fill="transparent"
+            className="glow-gauge"
+            style={{ "--gauge-glow": glowColor } as React.CSSProperties}
+          />
+        </svg>
+        <span className="absolute text-[10px] font-mono font-bold text-white/80">{value}%</span>
       </div>
-      <div className="h-2 rounded-full bg-surface-3 overflow-hidden relative border border-white/5">
-        <motion.div 
-          initial={{ width: 0 }} 
-          animate={{ width: `${value}%` }} 
-          transition={{ duration: 1.2, ease: "easeOut" }} 
-          className="h-full rounded-full relative" 
-          style={{ 
-            background: `linear-gradient(90deg, ${color}ee, ${color})`,
-            boxShadow: `0 0 10px ${glowColor}`
-          }}
-        >
-          {/* Moving light shimmer inside the bar */}
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.1)_50%,transparent_100%)] bg-[size:200%_100%] animate-shimmer" />
-        </motion.div>
-      </div>
+      <span className="text-[10px] font-bold tracking-wider text-white/40 uppercase mt-1">{label}</span>
     </div>
   );
 }
