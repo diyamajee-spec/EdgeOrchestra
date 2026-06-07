@@ -96,6 +96,20 @@ Capture webcam frames directly in the chat console and pipe them to the **Vision
 
 </td>
   </tr>
+  <tr>
+    <td width="50%">
+
+### 🕸️ Interactive 2D Canvas Memory Graph (RAG Visualizer)
+Toggle memory logs between Grid View and Graph View. The Graph View hosts a custom force-directed physics engine on an HTML5 Canvas—supporting node repulsion, spring tension, cursor drag operations, and floating details cards.
+
+</td>
+    <td width="50%">
+
+### ☄️ SVG Spark Trails & Circular Gauges
+Nodes in the Agent Graph dynamically exchange data by shooting glowing spark particles along the Bezier edge curves using SVG `<animateMotion>`. System stats are tracked using glowing, shimmering circular radial gauges.
+
+</td>
+  </tr>
 </table>
 
 ---
@@ -142,6 +156,7 @@ graph TD
 | **Local AI Inference** | Ollama (`phi4-mini`, `qwen2.5-vl`) | 100% on-device LLM and multimodal vision inference |
 | **State & Memory** | Zustand + Loro CRDT | Conflict-free, offline-capable replicated memory store |
 | **Agent Visualization** | ReactFlow / XYFlow | Interactive, draggable node-based agent graph |
+| **Memory Visualization** | HTML5 2D Canvas Physics | Force-directed memory relationship network with spring layouts |
 | **Plugin Runtime** | WebAssembly (`wasm32-unknown-unknown`) | Sandboxed, capability-restricted agent extension system |
 | **UI Primitives** | Radix UI + Lucide Icons | Accessible, headless component foundation |
 | **Speech I/O** | Web Speech API (STT + TTS) | Fully offline voice interaction layer |
