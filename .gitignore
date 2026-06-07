@@ -7,3 +7,4 @@ target/
 .env.local
 *.tsbuildinfo
 vite.config.d.ts
+.vercel
