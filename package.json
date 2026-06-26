@@ -65,14 +65,14 @@
     "@types/node": "^25.9.1",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
-    "@vitejs/plugin-react": "^4.5.2",
+    "@vitejs/plugin-react": "^6.0.2",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.27.0",
     "jsdom": "^24.0.0",
     "postcss": "^8.5.4",
     "tailwindcss": "^4.1.8",
     "typescript": "^5.8.3",
-    "vite": "^6.4.2",
+    "vite": "^8.0.16",
     "vitest": "^4.1.8"
   }
 }
